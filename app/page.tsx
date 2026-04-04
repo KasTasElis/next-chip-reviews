@@ -1,5 +1,6 @@
 import { BrandCard } from "./components/BrandCard";
 import { ChipCard } from "./components/ChipCard";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -12,9 +13,13 @@ export default function Home() {
 
         <div className="flex flex-wrap gap-3">
           {Array.from({ length: 4 }).map((i, k) => (
-            <div key={k} className="flex-1">
+            <Link
+              href="/chips/123"
+              key={k}
+              className="flex-1 hover:opacity-80 transition"
+            >
               <ChipCard />
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -27,9 +32,13 @@ export default function Home() {
 
         <div className="flex flex-wrap gap-3">
           {Array.from({ length: 9 }).map((i, k) => (
-            <div key={k} className="flex-1">
+            <Link
+              href="/chips/123"
+              key={k}
+              className="flex-1 hover:opacity-80 transition"
+            >
               <ChipCard />
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -42,9 +51,13 @@ export default function Home() {
 
         <div className="flex flex-wrap gap-3">
           {Array.from({ length: 10 }).map((i, k) => (
-            <div key={k} className="flex-1 min-w-[180px]">
+            <Link
+              href="/brands/lays"
+              key={k}
+              className="flex-1 hover:opacity-80 transition min-w-[180px]"
+            >
               <BrandCard />
-            </div>
+            </Link>
           ))}
         </div>
       </div>

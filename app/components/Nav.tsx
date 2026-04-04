@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const Nav = () => {
   const user = true;
 
@@ -11,7 +13,9 @@ export const Nav = () => {
 
       <div className="collapse-title navbar">
         <div className="navbar-start">
-          <button className="btn btn-ghost text-xl">🥔 Chip Reviews</button>
+          <Link href="/" className="btn btn-ghost text-xl">
+            🥔 Chipper
+          </Link>
         </div>
         <div className="navbar-center flex">
           <input
