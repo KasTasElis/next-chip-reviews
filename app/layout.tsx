@@ -28,11 +28,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body>
+      <body className="min-h-screen flex flex-col">
         <header>
           <Nav />
         </header>
-        <main>{children}</main>
+        <main className="flex-1 flex flex-col">{children}</main>
         <footer className="bg-base-200 mt-12 py-8 text-center text-sm opacity-40">
           &copy; {new Date().getFullYear()} Chip Review. All rights reserved.
         </footer>

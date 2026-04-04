@@ -4,14 +4,14 @@ export const Nav = () => {
   const user = false;
 
   return (
-    <div className="max-lg:collapse bg-base-200 lg:mb-48 shadow-sm w-full rounded-md">
+    <div className="bg-base-200 shadow-sm w-full rounded-md">
       <input id="navbar-1-toggle" className="peer hidden" type="checkbox" />
       <label
         htmlFor="navbar-1-toggle"
         className="fixed inset-0 hidden max-lg:peer-checked:block"
       ></label>
 
-      <div className="collapse-title navbar">
+      <div className="navbar">
         <div className="navbar-start">
           <Link href="/" className="btn btn-ghost text-xl">
             🥔 Chipper
