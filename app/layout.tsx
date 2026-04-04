@@ -33,6 +33,9 @@ export default function RootLayout({
           <Nav />
         </header>
         <main>{children}</main>
+        <footer className="bg-base-200 mt-12 py-8 text-center text-sm opacity-40">
+          &copy; {new Date().getFullYear()} Chip Review. All rights reserved.
+        </footer>
       </body>
     </html>
   );
