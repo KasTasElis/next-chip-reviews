@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const Nav = () => {
-  const user = true;
+  const user = false;
 
   return (
     <div className="max-lg:collapse bg-base-200 lg:mb-48 shadow-sm w-full rounded-md">
@@ -47,9 +47,12 @@ export const Nav = () => {
               </>
             ) : (
               <li>
-                <button className="btn btn-sm btn-outline btn-primary">
+                <Link
+                  className="btn btn-sm btn-outline btn-primary"
+                  href="/auth/sign-in"
+                >
                   Sign In
-                </button>
+                </Link>
               </li>
             )}
           </ul>
