@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/app/lib/supabase";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const signInSchema = z.object({
   email: z.email("Enter a valid email address"),
@@ -17,6 +17,7 @@ const signInSchema = z.object({
 type Inputs = z.infer<typeof signInSchema>;
 
 export default function SignIn() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -33,7 +34,8 @@ export default function SignIn() {
     }
 
     toast.success("Signed in!");
-    redirect("/");
+    router.push("/");
+    router.refresh();
   };
 
   return (

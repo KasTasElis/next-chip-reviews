@@ -1,11 +1,8 @@
-"use client";
-
 import Link from "next/link";
-import { useAuth } from "@/app/context/AuthContext";
+import type { User } from "@supabase/supabase-js";
+import { SignOutButton } from "./SignOutButton";
 
-export const Nav = () => {
-  const { user, signOut } = useAuth();
-
+export const Nav = ({ user }: { user: User | null }) => {
   return (
     <div className="bg-base-200 shadow-sm w-full rounded-md">
       <input id="navbar-1-toggle" className="peer hidden" type="checkbox" />
@@ -38,14 +35,11 @@ export const Nav = () => {
                 </li>
                 <li>
                   <button className="btn btn-sm btn-ghost btn-primary">
-                    🙋‍♂️ {user?.email}
+                    🙋‍♂️ {user.email}
                   </button>
                 </li>
-
                 <li>
-                  <button onClick={signOut} className="btn btn-sm btn-outline btn-error">
-                    Sign Out
-                  </button>
+                  <SignOutButton />
                 </li>
               </>
             ) : (
