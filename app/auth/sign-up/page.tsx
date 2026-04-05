@@ -1,16 +1,45 @@
+"use client";
+
 import Link from "next/link";
+import { useForm, SubmitHandler } from "react-hook-form";
+
+type Inputs = {
+  email: string;
+  password: string;
+};
 
 export default function SignUp() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isLoading },
+  } = useForm<Inputs>();
+
+  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+
   return (
     <div className="flex flex-col w-full max-w-sm">
       <h2 className="text-lg mb-3 text-center">Sign Up</h2>
 
-      <form className="flex flex-col gap-3 w-[320px] mx-auto mb-11">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-3 w-[320px] mx-auto mb-11"
+      >
         <div>
-          <input type="text" placeholder="email" className="input" />
+          <input
+            {...register("email", { required: true })}
+            type="email"
+            placeholder="email"
+            className="input"
+          />
         </div>
         <div>
-          <input type="password" placeholder="password" className="input" />
+          <input
+            {...register("password", { required: true })}
+            type="password"
+            placeholder="password"
+            className="input"
+          />
         </div>
 
         <button type="submit" className="btn btn-primary mt-3">
