@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
 
 export const Nav = () => {
-  const user = false;
+  const { user, signOut } = useAuth();
 
   return (
     <div className="bg-base-200 shadow-sm w-full rounded-md">
@@ -35,12 +38,12 @@ export const Nav = () => {
                 </li>
                 <li>
                   <button className="btn btn-sm btn-ghost btn-primary">
-                    🙋‍♂️ eliHimself
+                    🙋‍♂️ {user?.email}
                   </button>
                 </li>
 
                 <li>
-                  <button className="btn btn-sm btn-outline btn-error">
+                  <button onClick={signOut} className="btn btn-sm btn-outline btn-error">
                     Sign Out
                   </button>
                 </li>
