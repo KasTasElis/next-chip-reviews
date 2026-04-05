@@ -18,7 +18,7 @@ export default function SignUp() {
     handleSubmit,
     setError,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
   // useEffect(() => {
@@ -101,8 +101,12 @@ export default function SignUp() {
           )}
         </div>
 
-        <button type="submit" className="btn btn-primary mt-3">
-          Sign Up
+        <button
+          disabled={isSubmitting}
+          type="submit"
+          className={clsx("btn btn-primary mt-3", isSubmitting && "btn-disabled")}
+        >
+          {isSubmitting ? <span className="loading loading-spinner" /> : "🚀 Sign Up"}
         </button>
       </form>
 
