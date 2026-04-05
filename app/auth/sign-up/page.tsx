@@ -3,14 +3,18 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { supabase } from "@/app/lib/supabase";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
 
-type Inputs = {
-  email: string;
-  password: string;
-};
+const signUpSchema = z.object({
+  email: z.email("Enter a valid email address"),
+  password: z.string().min(4, "Password must be at least 4 characters"),
+});
+
+type Inputs = z.infer<typeof signUpSchema>;
 
 export default function SignUp() {
   const {
@@ -19,17 +23,9 @@ export default function SignUp() {
     setError,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
-
-  // useEffect(() => {
-  //   setError("email", { message: "Please enter a valid email address." });
-  //   setError("password", {
-  //     message: "Password must be at least 8 characters.",
-  //   });
-  // }, [setError]);
+  } = useForm<Inputs>({ resolver: zodResolver(signUpSchema) });
 
   const signUp: SubmitHandler<Inputs> = async ({ email, password }) => {
-    // TODO: what if we cant connect to supabase? Will we catch? How?
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -79,7 +75,7 @@ export default function SignUp() {
 
         <div>
           <input
-            {...register("email", { required: true })}
+            {...register("email")}
             type="email"
             placeholder="email"
             className={clsx("input", errors.email && "input-error")}
@@ -91,7 +87,7 @@ export default function SignUp() {
         </div>
         <div>
           <input
-            {...register("password", { required: true })}
+            {...register("password")}
             type="password"
             placeholder="password"
             className={clsx("input", errors.password && "input-error")}
@@ -104,9 +100,16 @@ export default function SignUp() {
         <button
           disabled={isSubmitting}
           type="submit"
-          className={clsx("btn btn-primary mt-3", isSubmitting && "btn-disabled")}
+          className={clsx(
+            "btn btn-primary mt-3",
+            isSubmitting && "btn-disabled",
+          )}
         >
-          {isSubmitting ? <span className="loading loading-spinner" /> : "🚀 Sign Up"}
+          {isSubmitting ? (
+            <span className="loading loading-spinner" />
+          ) : (
+            "🚀 Sign Up"
+          )}
         </button>
       </form>
 
