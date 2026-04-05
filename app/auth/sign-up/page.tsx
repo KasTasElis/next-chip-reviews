@@ -4,6 +4,8 @@ import Link from "next/link";
 import clsx from "clsx";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { supabase } from "@/app/lib/supabase";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 type Inputs = {
   email: string;
@@ -44,9 +46,8 @@ export default function SignUp() {
     }
 
     reset();
-
-    // show toast message?
-    // redirect to sign up?
+    toast.success("Sign up success! You may sign in. ☺️");
+    redirect("/auth/sign-in");
   };
 
   return (

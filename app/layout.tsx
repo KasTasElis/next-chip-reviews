@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "./components/Nav";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
         <footer className="bg-base-200 mt-12 py-8 text-center text-sm opacity-40">
           &copy; {new Date().getFullYear()} Chip Review. All rights reserved.
         </footer>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
