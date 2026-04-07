@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
+import ReviewSection from "./ReviewSection";
 
 export default async function ChipsSingle({
   params,
@@ -10,6 +11,9 @@ export default async function ChipsSingle({
   const { slug } = await params;
 
   const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const { data: chip } = await supabase
     .from("chips")
     .select("id, name, description, slug, photo_url, brands(name, slug, logo_url)")
@@ -57,7 +61,7 @@ export default async function ChipsSingle({
             <p className="text-sm opacity-70">{chip.description}</p>
           )}
 
-          <button className="btn btn-primary w-fit mt-2">Write a Review</button>
+          <ReviewSection chipId={chip.id} chipSlug={chip.slug} user={user} />
         </div>
       </div>
 
