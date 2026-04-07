@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import ReviewSection from "./ReviewSection";
+import ReviewList from "./ReviewList";
 
 export default async function ChipsSingle({
   params,
@@ -21,6 +22,12 @@ export default async function ChipsSingle({
     .single();
 
   if (!chip) notFound();
+
+  const { data: reviews } = await supabase
+    .from("reviews")
+    .select("id, rating, review, created_at, profiles(username)")
+    .eq("chips_id_fk", chip.id)
+    .order("created_at", { ascending: false });
 
   const brand = Array.isArray(chip.brands) ? chip.brands[0] : chip.brands;
 
@@ -68,7 +75,7 @@ export default async function ChipsSingle({
       {/* Reviews section */}
       <div>
         <h2 className="text-lg font-bold mb-4">Reviews</h2>
-        <p className="text-sm opacity-50">No reviews yet. Be the first!</p>
+        <ReviewList reviews={reviews ?? []} />
       </div>
     </div>
   );
