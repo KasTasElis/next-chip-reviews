@@ -18,6 +18,7 @@ export async function createBrand(data: BrandInputs) {
     name: parsed.data.name,
     description: parsed.data.description,
     slug: parsed.data.slug,
+    logo_url: parsed.data.logo_url,
   });
 
   if (error) return { error: error.message };

@@ -10,11 +10,12 @@ export type BrandFormInputs = z.infer<typeof brandFormSchema>;
 
 const RESERVED_SLUGS = ["new"];
 
-// Used by the server action — includes slug
+// Used by the server action — includes slug and logo_url
 export const brandSchema = brandFormSchema.extend({
   slug: z.string().min(1).refine((s) => !RESERVED_SLUGS.includes(s), {
     message: "That name is reserved — please choose a different one",
   }),
+  logo_url: z.string().min(1, "Logo is required"),
 });
 
 export type BrandInputs = z.infer<typeof brandSchema>;
