@@ -5,14 +5,21 @@ import Link from "next/link";
 
 export default async function Home() {
   const supabase = await createSupabaseServerClient();
-  const { data: brands } = await supabase
-    .from("brands")
-    .select("id, name, description, slug, logo_url")
-    .order("created_at", { ascending: false })
-    .limit(10);
+  const [{ data: brands }, { data: chips }] = await Promise.all([
+    supabase
+      .from("brands")
+      .select("id, name, description, slug, logo_url")
+      .order("created_at", { ascending: false })
+      .limit(10),
+    supabase
+      .from("chips")
+      .select("id, name, description, slug, photo_url")
+      .order("created_at", { ascending: false })
+      .limit(10),
+  ]);
   return (
     <div>
-      <div className="container mx-auto my-5 mb-7">
+      {/* <div className="container mx-auto my-5 mb-7">
         <div className="flex justify-between mb-3">
           <h2 className="text-lg font-bold">⭐️ All Time Favorites</h2>
           <button className="underline">See All</button>
@@ -29,7 +36,7 @@ export default async function Home() {
             </Link>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <div className="container mx-auto my-5 mb-7">
         <div className="flex justify-between mb-3">
@@ -38,13 +45,13 @@ export default async function Home() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {Array.from({ length: 9 }).map((i, k) => (
+          {chips?.map((chip) => (
             <Link
-              href="/chips/123"
-              key={k}
+              href={`/chips/${chip.slug}`}
+              key={chip.id}
               className="flex-1 hover:opacity-80 transition"
             >
-              <ChipCard />
+              <ChipCard name={chip.name} photo_url={chip.photo_url} description={chip.description} />
             </Link>
           ))}
         </div>

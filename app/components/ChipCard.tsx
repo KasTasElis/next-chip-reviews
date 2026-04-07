@@ -1,10 +1,12 @@
-export const ChipCard = () => {
+const PLACEHOLDER_IMG = "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
+
+export const ChipCard = ({ name, photo_url, description }: { name: string; photo_url?: string | null; description?: string | null }) => {
   return (
     <div className="card bg-base-100 shadow-sm w-full">
       <figure>
         <img
-          src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-          alt="Shoes"
+          src={photo_url ?? PLACEHOLDER_IMG}
+          alt={name}
         />
       </figure>
       <div className="card-body">
@@ -36,12 +38,9 @@ export const ChipCard = () => {
           <div className="text-sm opacity-40">(53)</div>
         </div>
         <div>
-          <h2 className="card-title text-sm">Pringles Sour Cream & Onion</h2>
+          <h2 className="card-title text-sm">{name}</h2>
         </div>
-        <p className="text-xs">
-          A card component has a figure, a body part, and inside body there are
-          title and actions parts...
-        </p>
+        {description && <p className="text-xs">{description}</p>}
       </div>
     </div>
   );
