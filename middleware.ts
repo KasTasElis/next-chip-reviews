@@ -19,7 +19,18 @@ export async function middleware(request: NextRequest) {
   );
 
   // Refresh session if expired — keeps the cookie alive
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const protectedPaths = ["/add-brand"];
+  const isProtected = protectedPaths.some((p) =>
+    request.nextUrl.pathname.startsWith(p)
+  );
+
+  if (isProtected && !user) {
+    const signInUrl = new URL("/auth/sign-in", request.url);
+    signInUrl.searchParams.set("next", request.nextUrl.pathname);
+    return NextResponse.redirect(signInUrl);
+  }
 
   return response;
 }

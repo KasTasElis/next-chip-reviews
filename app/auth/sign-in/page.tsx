@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import clsx from "clsx";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -7,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/app/lib/supabase";
 import { toast } from "sonner";
+import { use } from "react";
 import { useRouter } from "next/navigation";
 
 const signInSchema = z.object({
@@ -16,8 +18,15 @@ const signInSchema = z.object({
 
 type Inputs = z.infer<typeof signInSchema>;
 
-export default function SignIn() {
+export default function SignIn({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const router = useRouter();
+  const { next } = use(searchParams);
+  const nextPath = typeof next === "string" ? next : undefined;
+
   const {
     register,
     handleSubmit,
@@ -26,7 +35,10 @@ export default function SignIn() {
   } = useForm<Inputs>({ resolver: zodResolver(signInSchema) });
 
   const signIn: SubmitHandler<Inputs> = async ({ email, password }) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error) {
       setError("root", { message: error.message });
@@ -34,7 +46,7 @@ export default function SignIn() {
     }
 
     toast.success("Signed in!");
-    router.push("/");
+    router.push((nextPath ?? "/") as unknown as Route<string>);
     router.refresh();
   };
 
@@ -92,9 +104,16 @@ export default function SignIn() {
         <button
           disabled={isSubmitting}
           type="submit"
-          className={clsx("btn btn-primary mt-3", isSubmitting && "btn-disabled")}
+          className={clsx(
+            "btn btn-primary mt-3",
+            isSubmitting && "btn-disabled",
+          )}
         >
-          {isSubmitting ? <span className="loading loading-spinner" /> : "Sign In"}
+          {isSubmitting ? (
+            <span className="loading loading-spinner" />
+          ) : (
+            "Sign In"
+          )}
         </button>
       </form>
 
