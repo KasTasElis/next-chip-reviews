@@ -1,8 +1,15 @@
 import { BrandCard } from "./components/BrandCard";
 import { ChipCard } from "./components/ChipCard";
+import { createSupabaseServerClient } from "./lib/supabase-server";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createSupabaseServerClient();
+  const { data: brands } = await supabase
+    .from("brands")
+    .select("id, name, description, slug, logo_url")
+    .order("created_at", { ascending: false })
+    .limit(10);
   return (
     <div>
       <div className="container mx-auto my-5 mb-7">
@@ -50,13 +57,13 @@ export default function Home() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {Array.from({ length: 10 }).map((i, k) => (
+          {brands?.map((brand) => (
             <Link
-              href="/brands/lays"
-              key={k}
+              href={`/brands/${brand.slug}`}
+              key={brand.id}
               className="flex-1 hover:opacity-80 transition min-w-[180px]"
             >
-              <BrandCard />
+              <BrandCard name={brand.name} description={brand.description} logo_url={brand.logo_url} />
             </Link>
           ))}
         </div>
