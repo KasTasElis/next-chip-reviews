@@ -29,9 +29,9 @@ export const Nav = ({ user }: { user: User | null }) => {
             {user ? (
               <>
                 <li>
-                  <button className="btn btn-sm btn-outline btn-error">
+                  <Link href="/brands/new" className="btn btn-sm btn-outline btn-error">
                     Add Listing
-                  </button>
+                  </Link>
                 </li>
                 <li>
                   <button className="btn btn-sm btn-ghost btn-primary">

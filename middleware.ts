@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   // Refresh session if expired — keeps the cookie alive
   const { data: { user } } = await supabase.auth.getUser();
 
-  const protectedPaths = ["/add-brand"];
+  const protectedPaths = ["/brands/new"];
   const isProtected = protectedPaths.some((p) =>
     request.nextUrl.pathname.startsWith(p)
   );
