@@ -1,30 +1,37 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ChipCard } from "@/app/components/ChipCard";
+import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 
-const brand = {
-  name: "Pringles",
-  description:
-    "Known for their iconic saddle-shaped crisps and stackable tube packaging, Pringles has been a global snack staple since 1968. Every chip is uniform, crunchy, and boldly flavored.",
-  logo_url:
-    "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp",
-};
+export default async function BrandSingle({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
 
-const chips = [
-  { id: 1, slug: "pringles-sour-cream-onion" },
-  { id: 2, slug: "pringles-original" },
-  { id: 3, slug: "pringles-cheddar" },
-  { id: 4, slug: "pringles-bbq" },
-  { id: 5, slug: "pringles-ranch" },
-];
+  const supabase = await createSupabaseServerClient();
+  const { data: brand } = await supabase
+    .from("brands")
+    .select(
+      "id, name, description, slug, logo_url, chips(id, name, slug, photo_url, description)",
+    )
+    .eq("slug", slug)
+    .single();
 
-export default function BrandSingle() {
+  if (!brand) notFound();
+
+  const chips = brand.chips ?? [];
+  const fallbackImg =
+    "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
+
   return (
     <div className="container mx-auto my-5 mb-7">
       {/* Hero section */}
       <div className="flex flex-col sm:flex-row items-start gap-6 mb-10">
         <div className="avatar">
           <div className="w-24 rounded-xl">
-            <img src={brand.logo_url} alt={brand.name} />
+            <img src={brand.logo_url ?? fallbackImg} alt={brand.name} />
           </div>
         </div>
 
@@ -47,7 +54,11 @@ export default function BrandSingle() {
               href={`/chips/${chip.slug}`}
               className="flex-1 min-w-[180px] hover:opacity-80 transition"
             >
-              <ChipCard />
+              <ChipCard
+                name={chip.name}
+                photo_url={chip.photo_url}
+                description={chip.description}
+              />
             </Link>
           ))}
         </div>
