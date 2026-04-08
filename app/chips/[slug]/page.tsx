@@ -25,7 +25,7 @@ export default async function ChipsSingle({
 
   const { data: reviews } = await supabase
     .from("reviews")
-    .select("id, rating, review, created_at, profiles(username)")
+    .select("id, rating, review, created_at, user_id_fk, profiles(username)")
     .eq("chips_id_fk", chip.id)
     .order("created_at", { ascending: false });
 
@@ -75,7 +75,7 @@ export default async function ChipsSingle({
       {/* Reviews section */}
       <div>
         <h2 className="text-lg font-bold mb-4">Reviews</h2>
-        <ReviewList reviews={reviews ?? []} />
+        <ReviewList reviews={reviews ?? []} userId={user?.id ?? null} chipSlug={chip.slug} />
       </div>
     </div>
   );
