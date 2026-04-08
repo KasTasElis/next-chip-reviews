@@ -1,12 +1,25 @@
-const PLACEHOLDER_IMG = "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
+import Image from "next/image";
 
-export const ChipCard = ({ name, photo_url, description }: { name: string; photo_url?: string | null; description?: string | null }) => {
+const PLACEHOLDER_IMG =
+  "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
+
+export const ChipCard = ({
+  name,
+  photo_url,
+  description,
+}: {
+  name: string;
+  photo_url?: string | null;
+  description?: string | null;
+}) => {
   return (
     <div className="card bg-base-100 shadow-sm w-full">
-      <figure>
-        <img
+      <figure className="relative h-48">
+        <Image
           src={photo_url ?? PLACEHOLDER_IMG}
           alt={name}
+          fill
+          className="object-cover"
         />
       </figure>
       <div className="card-body">

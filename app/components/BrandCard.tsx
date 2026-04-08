@@ -13,7 +13,7 @@ export const BrandCard = ({ name, logo_url }: Props) => {
 
   return (
     <div className="card bg-base-100 shadow-sm w-full">
-      <figure className="relative h-32 bg-red-200">
+      <figure className="relative h-32">
         <Image src={src} alt={name} fill className="object-cover" />
       </figure>
       <div className="card-body">

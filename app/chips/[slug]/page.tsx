@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import ReviewSection from "./ReviewSection";
 import ReviewList from "./ReviewList";
+import Image from "next/image";
 
 export default async function ChipsSingle({
   params,
@@ -17,7 +18,9 @@ export default async function ChipsSingle({
   } = await supabase.auth.getUser();
   const { data: chip } = await supabase
     .from("chips")
-    .select("id, name, description, slug, photo_url, brands(name, slug, logo_url)")
+    .select(
+      "id, name, description, slug, photo_url, brands(name, slug, logo_url)",
+    )
     .eq("slug", slug)
     .single();
 
@@ -36,15 +39,17 @@ export default async function ChipsSingle({
       {/* Hero section */}
       <div className="flex flex-col md:flex-row gap-8 mb-10">
         <div className="md:w-1/2">
-          <div className="card bg-base-100 shadow-sm">
-            <figure>
-              <img
-                src={chip.photo_url ?? "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"}
-                alt={chip.name}
-                className="w-full"
-              />
-            </figure>
-          </div>
+          <figure className="relative h-48 bg-red-200">
+            <Image
+              src={
+                chip.photo_url ??
+                "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+              }
+              alt={chip.name}
+              className="object-cover"
+              fill
+            />
+          </figure>
         </div>
 
         <div className="md:w-1/2 flex flex-col gap-4">
@@ -56,8 +61,16 @@ export default async function ChipsSingle({
               className="flex items-center gap-2 hover:opacity-80 transition w-fit"
             >
               <div className="avatar">
-                <div className="mask mask-squircle w-8 h-8">
-                  <img src={brand.logo_url ?? ""} alt={brand.name} />
+                <div className="mask mask-squircle w-8 h-8 relative">
+                  <Image
+                    src={
+                      brand.logo_url ??
+                      "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                    }
+                    alt={brand.name}
+                    fill
+                    className="object-fit"
+                  />
                 </div>
               </div>
               <span className="text-sm font-medium">{brand.name}</span>
@@ -75,7 +88,11 @@ export default async function ChipsSingle({
       {/* Reviews section */}
       <div>
         <h2 className="text-lg font-bold mb-4">Reviews</h2>
-        <ReviewList reviews={reviews ?? []} userId={user?.id ?? null} chipSlug={chip.slug} />
+        <ReviewList
+          reviews={reviews ?? []}
+          userId={user?.id ?? null}
+          chipSlug={chip.slug}
+        />
       </div>
     </div>
   );
