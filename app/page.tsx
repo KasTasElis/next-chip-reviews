@@ -10,7 +10,7 @@ export default async function Home() {
       .from("brands")
       .select("id, name, description, slug, logo_url")
       .order("created_at", { ascending: false })
-      .limit(10),
+      .limit(4),
     supabase
       .from("chips")
       .select("id, name, description, slug, photo_url")
@@ -76,7 +76,7 @@ export default async function Home() {
             <Link
               href={`/brands/${brand.slug}`}
               key={brand.id}
-              className="flex-1 hover:opacity-80 transition min-w-[180px]"
+              className="flex-1 hover:opacity-80 transition"
             >
               <BrandCard
                 name={brand.name}

@@ -12,6 +12,13 @@ const nextConfig: NextConfig = {
         pathname: "/**",
         search: "",
       },
+      {
+        protocol: "https",
+        hostname: "vtbzagduqkqkxtdchpmb.supabase.co",
+        port: "",
+        pathname: "/storage/**",
+        search: "",
+      },
     ],
   },
 };

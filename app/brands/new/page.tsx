@@ -73,7 +73,7 @@ export default function AddBrand() {
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from("brand-logos")
-      .upload(path, logoFile, { upsert: true });
+      .upload(path, logoFile);
 
     if (uploadError) {
       console.log("Image error: ", uploadError);
