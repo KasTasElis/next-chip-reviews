@@ -19,6 +19,7 @@ export async function createChip(data: ChipInputs) {
     description: parsed.data.description,
     slug: parsed.data.slug,
     brand_id_fk: parsed.data.brand_id_fk,
+    photo_url: parsed.data.photo_url,
   });
 
   if (error) return { error: error.message };

@@ -16,6 +16,7 @@ export const chipSchema = chipFormSchema.extend({
   slug: z.string().min(1).refine((s) => !RESERVED_SLUGS.includes(s), {
     message: "That name is reserved — please choose a different one",
   }),
+  photo_url: z.string().url().optional(),
 });
 
 export type ChipInputs = z.infer<typeof chipSchema>;

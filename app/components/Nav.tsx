@@ -29,8 +29,19 @@ export const Nav = ({ user }: { user: User | null }) => {
             {user ? (
               <>
                 <li>
-                  <Link href="/brands/new" className="btn btn-sm btn-outline btn-error">
-                    Add Listing
+                  <Link
+                    href="/brands/new"
+                    className="btn btn-sm btn-outline btn-error"
+                  >
+                    Add Brand
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/chips/new"
+                    className="btn btn-sm btn-outline btn-error"
+                  >
+                    Add Chips
                   </Link>
                 </li>
                 <li>
