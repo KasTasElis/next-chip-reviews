@@ -39,9 +39,11 @@ export default async function Home() {
       </div> */}
 
       <div className="container mx-auto my-5 mb-7">
-        <div className="flex justify-between mb-3">
+        <div className="flex justify-between mb-3 items-center">
           <h2 className="text-lg font-bold">⭐️ Top Rated 10</h2>
-          <button className="underline">See All</button>
+          <Link href="/chips" className="underline hover:opacity-80">
+            See All
+          </Link>
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -51,16 +53,22 @@ export default async function Home() {
               key={chip.id}
               className="flex-1 hover:opacity-80 transition"
             >
-              <ChipCard name={chip.name} photo_url={chip.photo_url} description={chip.description} />
+              <ChipCard
+                name={chip.name}
+                photo_url={chip.photo_url}
+                description={chip.description}
+              />
             </Link>
           ))}
         </div>
       </div>
 
       <div className="container mx-auto my-5">
-        <div className="flex justify-between mb-3">
+        <div className="flex justify-between mb-3 items-center">
           <h2 className="text-lg font-bold">Brands</h2>
-          <button className="underline">See All</button>
+          <Link className="underline hover:opacity-80" href={"/brands"}>
+            See All
+          </Link>
         </div>
 
         <div className="flex flex-wrap gap-3">
@@ -70,7 +78,11 @@ export default async function Home() {
               key={brand.id}
               className="flex-1 hover:opacity-80 transition min-w-[180px]"
             >
-              <BrandCard name={brand.name} description={brand.description} logo_url={brand.logo_url} />
+              <BrandCard
+                name={brand.name}
+                description={brand.description}
+                logo_url={brand.logo_url}
+              />
             </Link>
           ))}
         </div>
