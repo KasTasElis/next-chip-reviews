@@ -1,4 +1,5 @@
 import { ChipCard } from "../components/ChipCard";
+import { ChipsEmptyState } from "../components/ChipsEmptyState";
 import { createSupabaseServerClient } from "../lib/supabase-server";
 import Link from "next/link";
 
@@ -18,7 +19,7 @@ export default async function ChipsPage() {
         </Link>
       </div>
       <div className="flex flex-wrap gap-3">
-        {chips?.map((chip) => (
+        {chips && chips.length > 0 ? chips.map((chip) => (
           <Link
             href={`/chips/${chip.slug}`}
             key={chip.id}
@@ -30,7 +31,7 @@ export default async function ChipsPage() {
               photo_url={chip.photo_url}
             />
           </Link>
-        ))}
+        )) : <ChipsEmptyState />}
       </div>
     </div>
   );

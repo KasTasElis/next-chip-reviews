@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChipCard } from "@/app/components/ChipCard";
+import { ChipsEmptyState } from "@/app/components/ChipsEmptyState";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 
 export default async function BrandSingle({
@@ -48,7 +49,7 @@ export default async function BrandSingle({
         </h2>
 
         <div className="flex flex-wrap gap-3">
-          {chips.map((chip) => (
+          {chips.length > 0 ? chips.map((chip) => (
             <Link
               key={chip.id}
               href={`/chips/${chip.slug}`}
@@ -60,7 +61,7 @@ export default async function BrandSingle({
                 description={chip.description}
               />
             </Link>
-          ))}
+          )) : <ChipsEmptyState />}
         </div>
       </div>
     </div>

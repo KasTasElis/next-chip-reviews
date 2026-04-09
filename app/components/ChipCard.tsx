@@ -6,7 +6,6 @@ const PLACEHOLDER_IMG =
 export const ChipCard = ({
   name,
   photo_url,
-  description,
 }: {
   name: string;
   photo_url?: string | null;
@@ -53,7 +52,6 @@ export const ChipCard = ({
         <div>
           <h2 className="card-title text-sm">{name}</h2>
         </div>
-        {description && <p className="text-xs">{description}</p>}
       </div>
     </div>
   );
