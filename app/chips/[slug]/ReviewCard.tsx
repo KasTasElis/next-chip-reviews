@@ -19,6 +19,7 @@ export type Review = {
   id: number;
   rating: number;
   review: string;
+  photo_url: string | null;
   created_at: string;
   user_id_fk: string;
   profiles: { username: string } | { username: string }[] | null;
@@ -143,6 +144,14 @@ export default function ReviewCard({
           ))}
         </div>
         <p className="text-sm">{review.review}</p>
+        {review.photo_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={review.photo_url}
+            alt="Review photo"
+            className="mt-3 max-h-64 max-w-full object-contain rounded-box"
+          />
+        )}
       </div>
 
       <dialog ref={modalRef} className="modal">

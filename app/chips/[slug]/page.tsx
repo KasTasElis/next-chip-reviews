@@ -28,7 +28,7 @@ export default async function ChipsSingle({
 
   const { data: reviews } = await supabase
     .from("reviews")
-    .select("id, rating, review, created_at, user_id_fk, profiles(username)")
+    .select("id, rating, review, photo_url, created_at, user_id_fk, profiles(username)")
     .eq("chips_id_fk", chip.id)
     .order("created_at", { ascending: false });
 

@@ -7,6 +7,7 @@ import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   review: z.string().min(1),
+  photo_url: z.string().url().optional(),
 });
 
 export async function submitReview(chipId: number, data: unknown) {
@@ -24,6 +25,7 @@ export async function submitReview(chipId: number, data: unknown) {
     user_id_fk: user.id,
     rating: parsed.data.rating,
     review: parsed.data.review,
+    ...(parsed.data.photo_url ? { photo_url: parsed.data.photo_url } : {}),
   });
 
   if (error) return { error: error.message };
