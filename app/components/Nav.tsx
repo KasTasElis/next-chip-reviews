@@ -45,9 +45,9 @@ export const Nav = ({ user }: { user: User | null }) => {
                   </Link>
                 </li>
                 <li>
-                  <button className="btn btn-sm btn-ghost btn-primary">
+                  <Link href="/profile" className="btn btn-sm btn-ghost btn-primary">
                     🙋‍♂️ {user.email}
-                  </button>
+                  </Link>
                 </li>
                 <li>
                   <SignOutButton />

@@ -12,7 +12,7 @@ export const BrandCard = ({ name, logo_url }: Props) => {
     "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
 
   return (
-    <div className="card bg-base-100 shadow-sm w-full">
+    <div className="card bg-base-100 shadow-sm max-w-48 w-full">
       <figure className="relative h-32">
         <Image src={src} alt={name} fill className="object-cover" />
       </figure>
