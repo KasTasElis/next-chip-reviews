@@ -26,7 +26,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <html
@@ -41,7 +43,7 @@ export default async function RootLayout({
         <footer className="bg-base-200 mt-12 py-8 text-center text-sm opacity-40">
           &copy; {new Date().getFullYear()} Chip Review. All rights reserved.
         </footer>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );
