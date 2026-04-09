@@ -1,5 +1,5 @@
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
-import ChipForm from "./chip-form";
+import ChipForm from "./ChipForm";
 
 export default async function AddChipPage() {
   const supabase = await createSupabaseServerClient();
