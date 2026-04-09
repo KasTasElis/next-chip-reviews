@@ -19,19 +19,23 @@ export default async function BrandsPage() {
         </Link>
       </div>
       <div className="flex flex-wrap gap-3">
-        {brands && brands.length > 0 ? brands.map((brand) => (
-          <Link
-            href={`/brands/${brand.slug}`}
-            key={brand.id}
-            className="flex-1 hover:opacity-80 transition min-w-[180px]"
-          >
-            <BrandCard
-              name={brand.name}
-              description={brand.description}
-              logo_url={brand.logo_url}
-            />
-          </Link>
-        )) : <BrandsEmptyState />}
+        {brands && brands.length > 0 ? (
+          brands.map((brand) => (
+            <Link
+              href={`/brands/${brand.slug}`}
+              key={brand.id}
+              className="hover:opacity-80 transition w-[25%]"
+            >
+              <BrandCard
+                name={brand.name}
+                description={brand.description}
+                logo_url={brand.logo_url}
+              />
+            </Link>
+          ))
+        ) : (
+          <BrandsEmptyState />
+        )}
       </div>
     </div>
   );

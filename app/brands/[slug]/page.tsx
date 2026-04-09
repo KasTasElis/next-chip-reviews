@@ -51,20 +51,24 @@ export default async function BrandSingle({
         </h2>
 
         <div className="flex flex-wrap gap-3">
-          {chips && chips.length > 0 ? chips.map((chip) => (
-            <Link
-              key={chip.id}
-              href={`/chips/${chip.slug}`}
-              className="flex-1 min-w-[180px] hover:opacity-80 transition"
-            >
-              <ChipCard
-                name={chip.name}
-                photo_url={chip.photo_url}
-                rating={chip.average_rating}
-                reviewCount={chip.review_count}
-              />
-            </Link>
-          )) : <ChipsEmptyState />}
+          {chips && chips.length > 0 ? (
+            chips.map((chip) => (
+              <Link
+                key={chip.id}
+                href={`/chips/${chip.slug}`}
+                className="hover:opacity-80 transition w-[25%]"
+              >
+                <ChipCard
+                  name={chip.name}
+                  photo_url={chip.photo_url}
+                  rating={chip.average_rating}
+                  reviewCount={chip.review_count}
+                />
+              </Link>
+            ))
+          ) : (
+            <ChipsEmptyState />
+          )}
         </div>
       </div>
     </div>

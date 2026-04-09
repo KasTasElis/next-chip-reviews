@@ -19,20 +19,24 @@ export default async function ChipsPage() {
         </Link>
       </div>
       <div className="flex flex-wrap gap-3">
-        {chips && chips.length > 0 ? chips.map((chip) => (
-          <Link
-            href={`/chips/${chip.slug}`}
-            key={chip.id}
-            className="flex-1 hover:opacity-80 transition min-w-[180px]"
-          >
-            <ChipCard
-              name={chip.name}
-              photo_url={chip.photo_url}
-              rating={chip.average_rating}
-              reviewCount={chip.review_count}
-            />
-          </Link>
-        )) : <ChipsEmptyState />}
+        {chips && chips.length > 0 ? (
+          chips.map((chip) => (
+            <Link
+              href={`/chips/${chip.slug}`}
+              key={chip.id}
+              className="hover:opacity-80 transition w-[25%]"
+            >
+              <ChipCard
+                name={chip.name}
+                photo_url={chip.photo_url}
+                rating={chip.average_rating}
+                reviewCount={chip.review_count}
+              />
+            </Link>
+          ))
+        ) : (
+          <ChipsEmptyState />
+        )}
       </div>
     </div>
   );
