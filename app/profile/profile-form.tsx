@@ -22,6 +22,7 @@ function getExtension(mimeType: string): string {
 }
 
 type Profile = {
+  id: string;
   username: string | null;
   email: string | null;
   avatar_url: string | null;
@@ -30,7 +31,7 @@ type Profile = {
 export default function ProfileForm({ profile }: { profile: Profile }) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    profile.avatar_url ?? null
+    profile.avatar_url ?? null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,7 +71,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
 
     if (avatarFile) {
       const ext = getExtension(avatarFile.type);
-      const path = `avatar.${ext}`;
+      const path = `${profile.id}/avatar.${ext}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("avatars")
@@ -123,7 +124,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
           <label
             className={clsx(
               "flex flex-col items-center justify-center w-full border-2 border-dashed rounded-box cursor-pointer hover:border-primary hover:bg-base-200 transition-colors overflow-hidden",
-              previewUrl ? "h-auto p-2" : "h-40 border-base-300"
+              previewUrl ? "h-auto p-2" : "h-40 border-base-300",
             )}
           >
             {previewUrl ? (
@@ -202,7 +203,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
           disabled={isSubmitting}
           className={clsx(
             "btn btn-primary mt-2",
-            isSubmitting && "btn-disabled"
+            isSubmitting && "btn-disabled",
           )}
         >
           {isSubmitting ? (

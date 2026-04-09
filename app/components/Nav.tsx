@@ -2,7 +2,13 @@ import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
 import { ProfileMenu } from "./ProfileMenu";
 
-export const Nav = ({ user }: { user: User | null }) => {
+export const Nav = ({
+  user,
+  avatarUrl,
+}: {
+  user: User | null;
+  avatarUrl: string | null;
+}) => {
   const signedInMenuJSX = (
     <div className="flex-none">
       <ul className="menu menu-horizontal px-3 gap-1">
@@ -13,7 +19,7 @@ export const Nav = ({ user }: { user: User | null }) => {
           <Link href="/chips/new">Add Chip</Link>
         </li>
       </ul>
-      <ProfileMenu />
+      <ProfileMenu avatarUrl={avatarUrl} />
     </div>
   );
 

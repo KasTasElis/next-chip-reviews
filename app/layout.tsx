@@ -30,6 +30,16 @@ export default async function RootLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
+  const avatarUrl = user
+    ? ((
+        await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", user.id)
+          .single()
+      ).data?.avatar_url ?? null)
+    : null;
+
   return (
     <html
       lang="en"
@@ -37,7 +47,7 @@ export default async function RootLayout({
     >
       <body className="min-h-screen flex flex-col">
         <header>
-          <Nav user={user} />
+          <Nav user={user} avatarUrl={avatarUrl} />
         </header>
         <main className="flex-1 flex flex-col">{children}</main>
         <footer className="bg-base-200 mt-12 py-8 text-center text-sm opacity-40">

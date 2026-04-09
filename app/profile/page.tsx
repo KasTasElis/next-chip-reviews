@@ -22,6 +22,7 @@ export default async function ProfilePage() {
   return (
     <ProfileForm
       profile={{
+        id: user.id,
         username: profile?.username ?? null,
         email: profile?.email ?? user.email ?? null,
         avatar_url: profile?.avatar_url ?? null,

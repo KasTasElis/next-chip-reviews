@@ -4,12 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { SignOutButton } from "./SignOutButton";
 
-export const ProfileMenu = () => (
+export const ProfileMenu = ({ avatarUrl }: { avatarUrl: string | null }) => (
   <div className="dropdown dropdown-end">
     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
       <div className="w-10 rounded-full relative">
         <Image
-          src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+          src={avatarUrl ?? "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"}
           alt="user profile photo"
           className="object-cover"
           fill
