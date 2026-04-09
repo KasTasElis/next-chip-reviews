@@ -32,7 +32,7 @@ export async function submitReview(chipId: number, data: unknown) {
   return { success: true };
 }
 
-export async function updateReview(reviewId: number, data: unknown, chipSlug: string = "") {
+export async function updateReview(reviewId: number, data: unknown) {
   const parsed = reviewSchema.safeParse(data);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
@@ -47,7 +47,8 @@ export async function updateReview(reviewId: number, data: unknown, chipSlug: st
     .select("user_id_fk")
     .eq("id", reviewId)
     .single();
-  if (!existing || existing.user_id_fk !== user.id) return { error: "Forbidden" };
+  if (!existing || existing.user_id_fk !== user.id)
+    return { error: "Forbidden" };
 
   const { error } = await supabase
     .from("reviews")
@@ -59,7 +60,7 @@ export async function updateReview(reviewId: number, data: unknown, chipSlug: st
   return { success: true };
 }
 
-export async function deleteReview(reviewId: number, chipSlug: string = "") {
+export async function deleteReview(reviewId: number) {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -71,7 +72,8 @@ export async function deleteReview(reviewId: number, chipSlug: string = "") {
     .select("user_id_fk")
     .eq("id", reviewId)
     .single();
-  if (!existing || existing.user_id_fk !== user.id) return { error: "Forbidden" };
+  if (!existing || existing.user_id_fk !== user.id)
+    return { error: "Forbidden" };
 
   const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
 

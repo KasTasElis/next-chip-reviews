@@ -28,11 +28,9 @@ export type Review = {
 export default function ReviewCard({
   review,
   userId,
-  chipSlug,
 }: {
   review: Review;
   userId: string | null;
-  chipSlug: string;
 }) {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -58,7 +56,7 @@ export default function ReviewCard({
   const rating = watch("rating");
 
   const submitEdit: SubmitHandler<Inputs> = async (data) => {
-    const result = await updateReview(review.id, data, chipSlug);
+    const result = await updateReview(review.id, data);
     if (result.error) {
       setError("root", { message: result.error });
       return;
@@ -69,7 +67,7 @@ export default function ReviewCard({
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    const result = await deleteReview(review.id, chipSlug);
+    const result = await deleteReview(review.id);
     setIsDeleting(false);
     if (result.error) {
       toast.error(result.error);
@@ -105,7 +103,16 @@ export default function ReviewCard({
                   className="btn btn-ghost btn-xs"
                   aria-label="Edit review"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-3.5 w-3.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                   </svg>
@@ -119,7 +126,16 @@ export default function ReviewCard({
                   {isDeleting ? (
                     <span className="loading loading-spinner loading-xs" />
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3.5 w-3.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <polyline points="3 6 5 6 21 6" />
                       <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                       <path d="M10 11v6M14 11v6" />
@@ -157,11 +173,24 @@ export default function ReviewCard({
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg mb-4">Edit Review</h3>
-          <form onSubmit={handleSubmit(submitEdit)} className="flex flex-col gap-3">
+          <form
+            onSubmit={handleSubmit(submitEdit)}
+            className="flex flex-col gap-3"
+          >
             {errors.root && (
               <div role="alert" className="alert alert-error">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 shrink-0 stroke-current"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>{errors.root.message}</span>
               </div>
@@ -176,34 +205,52 @@ export default function ReviewCard({
                     type="radio"
                     className="mask mask-star-2 bg-orange-400"
                     checked={rating === value}
-                    onChange={() => setValue("rating", value, { shouldValidate: true })}
+                    onChange={() =>
+                      setValue("rating", value, { shouldValidate: true })
+                    }
                   />
                 ))}
               </div>
               {errors.rating && (
-                <p className="text-error text-xs mt-1">{errors.rating.message}</p>
+                <p className="text-error text-xs mt-1">
+                  {errors.rating.message}
+                </p>
               )}
             </div>
 
             <div>
               <textarea
                 value={watch("review")}
-                onChange={(e) => setValue("review", e.target.value, { shouldValidate: true })}
+                onChange={(e) =>
+                  setValue("review", e.target.value, { shouldValidate: true })
+                }
                 placeholder="Write your review..."
                 rows={4}
-                className={clsx("textarea w-full", errors.review && "textarea-error")}
+                className={clsx(
+                  "textarea w-full",
+                  errors.review && "textarea-error",
+                )}
               />
               {errors.review && (
-                <p className="text-error text-xs mt-1">{errors.review.message}</p>
+                <p className="text-error text-xs mt-1">
+                  {errors.review.message}
+                </p>
               )}
             </div>
 
             <button
               disabled={isSubmitting}
               type="submit"
-              className={clsx("btn btn-primary", isSubmitting && "btn-disabled")}
+              className={clsx(
+                "btn btn-primary",
+                isSubmitting && "btn-disabled",
+              )}
             >
-              {isSubmitting ? <span className="loading loading-spinner" /> : "Save"}
+              {isSubmitting ? (
+                <span className="loading loading-spinner" />
+              ) : (
+                "Save"
+              )}
             </button>
           </form>
           <div className="modal-action">

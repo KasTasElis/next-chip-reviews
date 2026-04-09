@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChipCard } from "@/app/components/ChipCard";
@@ -33,8 +34,13 @@ export default async function BrandSingle({
       {/* Hero section */}
       <div className="flex flex-col sm:flex-row items-start gap-6 mb-10">
         <div className="avatar">
-          <div className="w-24 rounded-xl">
-            <img src={brand.logo_url ?? fallbackImg} alt={brand.name} />
+          <div className="w-24 rounded-xl relative">
+            <Image
+              src={brand.logo_url ?? fallbackImg}
+              alt={brand.name}
+              fill
+              className="object-cover rounded-xl"
+            />
           </div>
         </div>
 

@@ -5,11 +5,9 @@ import ReviewCard, { type Review } from "./ReviewCard";
 export default function ReviewList({
   reviews,
   userId,
-  chipSlug,
 }: {
   reviews: Review[];
   userId: string | null;
-  chipSlug: string;
 }) {
   if (!reviews.length) {
     return <p className="text-sm opacity-50">No reviews yet. Be the first!</p>;
@@ -18,7 +16,7 @@ export default function ReviewList({
   return (
     <div className="flex flex-col gap-4">
       {reviews.map((r) => (
-        <ReviewCard key={r.id} review={r} userId={userId} chipSlug={chipSlug} />
+        <ReviewCard key={r.id} review={r} userId={userId} />
       ))}
     </div>
   );
