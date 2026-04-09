@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import ReviewSection from "./ReviewSection";
 import ReviewList from "./ReviewList";
+import StarRating from "@/app/components/StarRating";
 import Image from "next/image";
 
 export default async function ChipsSingle({
@@ -34,6 +35,11 @@ export default async function ChipsSingle({
 
   const brand = Array.isArray(chip.brands) ? chip.brands[0] : chip.brands;
 
+  const reviewCount = reviews?.length ?? 0;
+  const avgRating = reviewCount > 0
+    ? Math.round(reviews!.reduce((sum, r) => sum + r.rating, 0) / reviewCount)
+    : 0;
+
   return (
     <div className="container mx-auto my-5 mb-7">
       {/* Hero section */}
@@ -54,6 +60,7 @@ export default async function ChipsSingle({
 
         <div className="md:w-1/2 flex flex-col gap-4">
           <h1 className="text-2xl font-bold">{chip.name}</h1>
+          <StarRating rating={avgRating} count={reviewCount} />
 
           {brand && (
             <Link

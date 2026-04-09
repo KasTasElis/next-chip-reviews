@@ -1,4 +1,5 @@
 import Image from "next/image";
+import StarRating from "./StarRating";
 
 const PLACEHOLDER_IMG =
   "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
@@ -6,10 +7,14 @@ const PLACEHOLDER_IMG =
 export const ChipCard = ({
   name,
   photo_url,
+  rating,
+  reviewCount,
 }: {
   name: string;
   photo_url?: string | null;
   description?: string | null;
+  rating?: number;
+  reviewCount?: number;
 }) => {
   return (
     <div className="card bg-base-100 shadow-sm w-full max-w-64">
@@ -22,33 +27,7 @@ export const ChipCard = ({
         />
       </figure>
       <div className="card-body">
-        <div className="flex items-center gap-2">
-          <div className="text-sm">4.7</div>
-          <div className="rating">
-            <div
-              className="mask mask-star bg-orange-400"
-              aria-label="1 star"
-            ></div>
-            <div
-              className="mask mask-star bg-orange-400"
-              aria-label="2 star"
-            ></div>
-            <div
-              className="mask mask-star bg-orange-400"
-              aria-label="3 star"
-              aria-current="true"
-            ></div>
-            <div
-              className="mask mask-star bg-orange-400"
-              aria-label="4 star"
-            ></div>
-            <div
-              className="mask mask-star bg-orange-400"
-              aria-label="5 star"
-            ></div>
-          </div>
-          <div className="text-sm opacity-40">(53)</div>
-        </div>
+        <StarRating rating={rating} count={reviewCount} />
         <div>
           <h2 className="card-title text-sm">{name}</h2>
         </div>
