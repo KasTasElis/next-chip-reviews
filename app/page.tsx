@@ -51,7 +51,7 @@ export default async function Home() {
               <Link
                 href={`/chips/${chip.slug}`}
                 key={chip.id}
-                className="flex-1 hover:opacity-80 transition"
+                className="hover:opacity-80 transition w-[25%]"
               >
                 <ChipCard
                   name={chip.name}
@@ -75,13 +75,13 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex gap-3">
           {brands && brands.length > 0 ? (
             brands.map((brand) => (
               <Link
                 href={`/brands/${brand.slug}`}
                 key={brand.id}
-                className="flex-1 hover:opacity-80 transition"
+                className="hover:opacity-80 transition w-[25%]"
               >
                 <BrandCard
                   name={brand.name}

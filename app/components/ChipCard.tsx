@@ -17,7 +17,7 @@ export const ChipCard = ({
   reviewCount?: number;
 }) => {
   return (
-    <div className="card bg-base-100 shadow-sm w-full max-w-64">
+    <div className="card bg-base-100 shadow-sm">
       <figure className="relative h-48">
         <Image
           src={photo_url ?? PLACEHOLDER_IMG}
