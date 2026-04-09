@@ -18,9 +18,9 @@ export default async function ChipsSingle({
     data: { user },
   } = await supabase.auth.getUser();
   const { data: chip } = await supabase
-    .from("chips")
+    .from("chips_with_stats")
     .select(
-      "id, name, description, slug, photo_url, brands(name, slug, logo_url)",
+      "id, name, description, slug, photo_url, average_rating, review_count, brands(name, slug, logo_url)",
     )
     .eq("slug", slug)
     .single();
@@ -34,11 +34,6 @@ export default async function ChipsSingle({
     .order("created_at", { ascending: false });
 
   const brand = Array.isArray(chip.brands) ? chip.brands[0] : chip.brands;
-
-  const reviewCount = reviews?.length ?? 0;
-  const avgRating = reviewCount > 0
-    ? Math.round(reviews!.reduce((sum, r) => sum + r.rating, 0) / reviewCount)
-    : 0;
 
   return (
     <div className="container mx-auto my-5 mb-7">
@@ -60,7 +55,7 @@ export default async function ChipsSingle({
 
         <div className="md:w-1/2 flex flex-col gap-4">
           <h1 className="text-2xl font-bold">{chip.name}</h1>
-          <StarRating rating={avgRating} count={reviewCount} />
+          <StarRating rating={chip.average_rating} count={chip.review_count} />
 
           {brand && (
             <Link

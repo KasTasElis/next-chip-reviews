@@ -14,15 +14,17 @@ export default async function BrandSingle({
   const supabase = await createSupabaseServerClient();
   const { data: brand } = await supabase
     .from("brands")
-    .select(
-      "id, name, description, slug, logo_url, chips(id, name, slug, photo_url, description)",
-    )
+    .select("id, name, description, slug, logo_url")
     .eq("slug", slug)
     .single();
 
   if (!brand) notFound();
 
-  const chips = brand.chips ?? [];
+  const { data: chips } = await supabase
+    .from("chips_with_stats")
+    .select("id, name, slug, photo_url, average_rating, review_count")
+    .eq("brand_id_fk", brand.id)
+    .order("average_rating", { ascending: false });
   const fallbackImg =
     "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
 
@@ -45,11 +47,11 @@ export default async function BrandSingle({
       {/* Chips section */}
       <div>
         <h2 className="text-lg font-bold mb-4">
-          Chips by {brand.name} ({chips.length})
+          Chips by {brand.name} ({chips?.length ?? 0})
         </h2>
 
         <div className="flex flex-wrap gap-3">
-          {chips.length > 0 ? chips.map((chip) => (
+          {chips && chips.length > 0 ? chips.map((chip) => (
             <Link
               key={chip.id}
               href={`/chips/${chip.slug}`}
@@ -58,7 +60,8 @@ export default async function BrandSingle({
               <ChipCard
                 name={chip.name}
                 photo_url={chip.photo_url}
-                description={chip.description}
+                rating={chip.average_rating}
+                reviewCount={chip.review_count}
               />
             </Link>
           )) : <ChipsEmptyState />}

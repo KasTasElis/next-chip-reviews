@@ -13,12 +13,9 @@ export default async function Home() {
       .select("id, name, description, slug, logo_url")
       .order("created_at", { ascending: false })
       .limit(4),
-    supabase
-      .from("chips")
-      .select("id, name, description, slug, photo_url")
-      .order("created_at", { ascending: false })
-      .limit(10),
+    supabase.from("chips_with_stats").select("*").limit(10),
   ]);
+
   return (
     <div>
       {/* <div className="container mx-auto my-5 mb-7">
@@ -49,19 +46,24 @@ export default async function Home() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {chips && chips.length > 0 ? chips.map((chip) => (
-            <Link
-              href={`/chips/${chip.slug}`}
-              key={chip.id}
-              className="flex-1 hover:opacity-80 transition"
-            >
-              <ChipCard
-                name={chip.name}
-                photo_url={chip.photo_url}
-                description={chip.description}
-              />
-            </Link>
-          )) : <ChipsEmptyState />}
+          {chips && chips.length > 0 ? (
+            chips.map((chip) => (
+              <Link
+                href={`/chips/${chip.slug}`}
+                key={chip.id}
+                className="flex-1 hover:opacity-80 transition"
+              >
+                <ChipCard
+                  name={chip.name}
+                  photo_url={chip.photo_url}
+                  rating={chip.average_rating}
+                  reviewCount={chip.review_count}
+                />
+              </Link>
+            ))
+          ) : (
+            <ChipsEmptyState />
+          )}
         </div>
       </div>
 
@@ -74,19 +76,23 @@ export default async function Home() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {brands && brands.length > 0 ? brands.map((brand) => (
-            <Link
-              href={`/brands/${brand.slug}`}
-              key={brand.id}
-              className="flex-1 hover:opacity-80 transition"
-            >
-              <BrandCard
-                name={brand.name}
-                description={brand.description}
-                logo_url={brand.logo_url}
-              />
-            </Link>
-          )) : <BrandsEmptyState />}
+          {brands && brands.length > 0 ? (
+            brands.map((brand) => (
+              <Link
+                href={`/brands/${brand.slug}`}
+                key={brand.id}
+                className="flex-1 hover:opacity-80 transition"
+              >
+                <BrandCard
+                  name={brand.name}
+                  description={brand.description}
+                  logo_url={brand.logo_url}
+                />
+              </Link>
+            ))
+          ) : (
+            <BrandsEmptyState />
+          )}
         </div>
       </div>
     </div>

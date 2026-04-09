@@ -6,8 +6,8 @@ import Link from "next/link";
 export default async function ChipsPage() {
   const supabase = await createSupabaseServerClient();
   const { data: chips } = await supabase
-    .from("chips")
-    .select("id, name, description, slug, photo_url")
+    .from("chips_with_stats")
+    .select("id, name, slug, photo_url, average_rating, review_count")
     .order("created_at", { ascending: false });
 
   return (
@@ -27,8 +27,9 @@ export default async function ChipsPage() {
           >
             <ChipCard
               name={chip.name}
-              description={chip.description}
               photo_url={chip.photo_url}
+              rating={chip.average_rating}
+              reviewCount={chip.review_count}
             />
           </Link>
         )) : <ChipsEmptyState />}
