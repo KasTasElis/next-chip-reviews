@@ -1,4 +1,5 @@
 import { BrandCard } from "../components/BrandCard";
+import { BrandsEmptyState } from "../components/BrandsEmptyState";
 import { createSupabaseServerClient } from "../lib/supabase-server";
 import Link from "next/link";
 
@@ -18,7 +19,7 @@ export default async function BrandsPage() {
         </Link>
       </div>
       <div className="flex flex-wrap gap-3">
-        {brands?.map((brand) => (
+        {brands && brands.length > 0 ? brands.map((brand) => (
           <Link
             href={`/brands/${brand.slug}`}
             key={brand.id}
@@ -30,7 +31,7 @@ export default async function BrandsPage() {
               logo_url={brand.logo_url}
             />
           </Link>
-        ))}
+        )) : <BrandsEmptyState />}
       </div>
     </div>
   );
