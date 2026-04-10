@@ -3,8 +3,9 @@ on:
   push:
     branches:
       - main
+
 jobs:
-  build-and-deploy:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,10 +21,32 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
+      - name: Run lint
+        run: npm run lint
+
       - name: Run unit tests
         run: npx vitest run
 
-      # Deploy via Vercel CLI
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Deploy to Vercel
         run: npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
         env:
