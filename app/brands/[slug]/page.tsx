@@ -1,26 +1,48 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
+import type { Metadata } from "next";
 import { ChipCard } from "@/app/components/ChipCard";
 import { ChipsEmptyState } from "@/app/components/ChipsEmptyState";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 
-export default async function BrandSingle({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+type Props = { params: Promise<{ slug: string }> };
 
+const getBrand = cache(async (slug: string) => {
   const supabase = await createSupabaseServerClient();
-  const { data: brand } = await supabase
+  const { data } = await supabase
     .from("brands")
     .select("id, name, description, slug, logo_url")
     .eq("slug", slug)
     .single();
+  return data;
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const brand = await getBrand(slug);
+  if (!brand) return {};
+
+  const desc = brand.description
+    ? brand.description.slice(0, 155) + (brand.description.length > 155 ? "…" : "")
+    : `Browse all chips by ${brand.name}.`;
+
+  return {
+    title: brand.name,
+    description: desc,
+    openGraph: brand.logo_url ? { images: [brand.logo_url] } : undefined,
+  };
+}
+
+export default async function BrandSingle({ params }: Props) {
+  const { slug } = await params;
+
+  const brand = await getBrand(slug);
 
   if (!brand) notFound();
 
+  const supabase = await createSupabaseServerClient();
   const { data: chips } = await supabase
     .from("chips_with_stats")
     .select("id, name, slug, photo_url, average_rating, review_count")

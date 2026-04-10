@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { BrandCard } from "./components/BrandCard";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Discover top-rated chips and trending brands. Browse community reviews.",
+};
 import { BrandsEmptyState } from "./components/BrandsEmptyState";
 import { ChipCard } from "./components/ChipCard";
 import { ChipsEmptyState } from "./components/ChipsEmptyState";

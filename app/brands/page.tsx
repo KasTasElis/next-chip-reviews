@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { BrandCard } from "../components/BrandCard";
+
+export const metadata: Metadata = {
+  title: "All Brands",
+  description: "Explore all chip brands reviewed by the community.",
+};
 import { BrandsEmptyState } from "../components/BrandsEmptyState";
 import { createSupabaseServerClient } from "../lib/supabase-server";
 import Link from "next/link";

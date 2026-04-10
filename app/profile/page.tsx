@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = { title: "My Profile" };
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import ProfileForm from "./profile-form";
 

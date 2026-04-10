@@ -1,29 +1,51 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
+import type { Metadata } from "next";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import ReviewSection from "./ReviewSection";
 import ReviewList from "./ReviewList";
 import StarRating from "@/app/components/StarRating";
 import Image from "next/image";
 
-export default async function ChipsSingle({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+type Props = { params: Promise<{ slug: string }> };
 
+const getChip = cache(async (slug: string) => {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const { data: chip } = await supabase
+  const { data } = await supabase
     .from("chips_with_stats")
     .select(
       "id, name, description, slug, photo_url, average_rating, review_count, brands(name, slug, logo_url)",
     )
     .eq("slug", slug)
     .single();
+  return data;
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const chip = await getChip(slug);
+  if (!chip) return {};
+
+  const desc = chip.description
+    ? chip.description.slice(0, 155) + (chip.description.length > 155 ? "…" : "")
+    : `Read community reviews for ${chip.name}.`;
+
+  return {
+    title: chip.name,
+    description: desc,
+    openGraph: chip.photo_url ? { images: [chip.photo_url] } : undefined,
+  };
+}
+
+export default async function ChipsSingle({ params }: Props) {
+  const { slug } = await params;
+
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const chip = await getChip(slug);
 
   if (!chip) notFound();
 
