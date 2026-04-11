@@ -1,14 +1,21 @@
 import Link from "next/link";
-import type { User } from "@supabase/supabase-js";
 import { ProfileMenu } from "./ProfileMenu";
+import { createSupabaseServerClient } from "../lib/supabase-server";
 
-export const Nav = ({
-  user,
-  avatarUrl,
-}: {
-  user: User | null;
-  avatarUrl: string | null;
-}) => {
+export const Nav = async () => {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const avatarUrl = user
+    ? ((
+        await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", user.id)
+          .single()
+      ).data?.avatar_url ?? null)
+    : null;
   const signedInMenuJSX = (
     <div className="flex-none">
       <ul className="menu menu-horizontal px-3 gap-1">
