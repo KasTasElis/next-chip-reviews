@@ -18,7 +18,7 @@ export async function createChip(data: ChipInputs) {
     name: parsed.data.name,
     description: parsed.data.description,
     slug: parsed.data.slug,
-    brand_id_fk: parsed.data.brand_id_fk,
+    brand_id_fk: Number(parsed.data.brand_id_fk),
     photo_url: parsed.data.photo_url,
   });
 

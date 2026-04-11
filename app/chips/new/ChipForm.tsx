@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { chipFormSchema, type ChipFormInputs } from "./schema";
 import { createChip } from "./actions";
 import { supabase } from "@/app/lib/supabase";
+import type { Brand } from "@/supabase/types";
 
 function getExtension(mimeType: string): string {
   const map: Record<string, string> = {
@@ -22,8 +23,6 @@ function getExtension(mimeType: string): string {
   };
   return map[mimeType] ?? "jpg";
 }
-
-type Brand = { id: string; name: string };
 
 export default function ChipForm({ brands }: { brands: Brand[] }) {
   const router = useRouter();
@@ -84,7 +83,13 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
         .getPublicUrl(uploadData.path).data.publicUrl;
     }
 
-    const result = await createChip({ name, description, brand_id_fk, slug, photo_url });
+    const result = await createChip({
+      name,
+      description,
+      brand_id_fk,
+      slug,
+      photo_url,
+    });
     if (result?.error) {
       setError("root", { message: result.error });
       return;

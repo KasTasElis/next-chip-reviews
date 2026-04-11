@@ -8,7 +8,7 @@ export default async function AddChipPage() {
   const supabase = await createSupabaseServerClient();
   const { data: brands } = await supabase
     .from("brands")
-    .select("id, name")
+    .select("*")
     .order("name");
 
   return <ChipForm brands={brands ?? []} />;
