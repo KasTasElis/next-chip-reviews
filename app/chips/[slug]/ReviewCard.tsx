@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useRef, useState, useCallback } from "react";
+import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import clsx from "clsx";
@@ -46,24 +46,32 @@ export default function ReviewCard({
     setError,
     reset,
     setValue,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>({
     resolver: zodResolver(reviewSchema),
     defaultValues: { rating: review.rating, review: review.review },
   });
 
-  const rating = watch("rating");
+  const [rating, reviewText] = useWatch({ control, name: ["rating", "review"] });
 
-  const submitEdit: SubmitHandler<Inputs> = async (data) => {
-    const result = await updateReview(review.id, data);
-    if (result.error) {
-      setError("root", { message: result.error });
-      return;
-    }
-    toast.success("Review updated!");
-    modalRef.current?.close();
-  };
+  const submitEdit = useCallback<SubmitHandler<Inputs>>(
+    async (data) => {
+      const result = await updateReview(review.id, data);
+      if (result.error) {
+        setError("root", { message: result.error });
+        return;
+      }
+      toast.success("Review updated!");
+      modalRef.current?.close();
+    },
+    [review.id, setError, modalRef],
+  );
+
+  const onSubmitForm = useCallback(
+    (e: React.BaseSyntheticEvent) => handleSubmit(submitEdit)(e),
+    [handleSubmit, submitEdit],
+  );
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -173,10 +181,7 @@ export default function ReviewCard({
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg mb-4">Edit Review</h3>
-          <form
-            onSubmit={handleSubmit(submitEdit)}
-            className="flex flex-col gap-3"
-          >
+          <form onSubmit={onSubmitForm} className="flex flex-col gap-3">
             {errors.root && (
               <div role="alert" className="alert alert-error">
                 <svg
@@ -220,7 +225,7 @@ export default function ReviewCard({
 
             <div>
               <textarea
-                value={watch("review")}
+                value={reviewText}
                 onChange={(e) =>
                   setValue("review", e.target.value, { shouldValidate: true })
                 }

@@ -4,7 +4,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import clsx from "clsx";
@@ -52,11 +52,11 @@ function ReviewForm({
     setError,
     reset,
     setValue,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>({ resolver: zodResolver(reviewSchema) });
 
-  const rating = watch("rating");
+  const rating = useWatch({ control, name: "rating" });
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
