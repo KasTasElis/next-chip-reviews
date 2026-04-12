@@ -78,13 +78,13 @@ export default async function BrandSingle({ params }: Props) {
           Chips by {brand.name} ({chips?.length ?? 0})
         </h2>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {chips && chips.length > 0 ? (
             chips.map((chip) => (
               <Link
                 key={chip.id}
                 href={`/chips/${chip.slug}`}
-                className="hover:opacity-80 transition w-[25%]"
+                className="hover:opacity-80 transition"
               >
                 <ChipCard
                   name={chip.name}
