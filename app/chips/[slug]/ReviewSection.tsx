@@ -8,6 +8,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import clsx from "clsx";
+import { routes } from "@/app/routes";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
 import { submitReview } from "./actions";
@@ -206,7 +207,7 @@ export default function ReviewSection({
   if (!user) {
     return (
       <Link
-        href={`/auth/sign-in?next=/chips/${chipSlug}` as Route}
+        href={`${routes.signIn}?next=${routes.chips}/${chipSlug}` as Route}
         className="btn btn-outline btn-primary w-fit mt-2"
       >
         Sign in to review

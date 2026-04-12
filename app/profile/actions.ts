@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
+import { routes } from "@/app/routes";
 import { profileSchema, type ProfileInputs } from "./schema";
 
 export async function updateProfile(data: ProfileInputs) {
@@ -26,6 +27,6 @@ export async function updateProfile(data: ProfileInputs) {
 
   if (error) return { error: error.message };
 
-  revalidatePath("/profile");
+  revalidatePath(routes.profile);
   return { success: true };
 }

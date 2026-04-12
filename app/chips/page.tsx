@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 import { ChipsEmptyState } from "../components/ChipsEmptyState";
 import { createSupabaseServerClient } from "../lib/supabase-server";
 import Link from "next/link";
+import { routes } from "@/app/routes";
 
 export default async function ChipsPage() {
   const supabase = await createSupabaseServerClient();
@@ -20,7 +21,7 @@ export default async function ChipsPage() {
     <div className="container mx-auto my-5">
       <div className="flex justify-between mb-3 items-center">
         <h2 className="text-lg font-bold">All Chips</h2>
-        <Link className="underline hover:opacity-80" href="/chips/new">
+        <Link className="underline hover:opacity-80" href={routes.chipsNew}>
           Add Chip
         </Link>
       </div>
@@ -28,7 +29,7 @@ export default async function ChipsPage() {
         {chips && chips.length > 0 ? (
           chips.map((chip) => (
             <Link
-              href={`/chips/${chip.slug}`}
+              href={`${routes.chips}/${chip.slug}`}
               key={chip.id}
               className="hover:opacity-80 transition"
             >

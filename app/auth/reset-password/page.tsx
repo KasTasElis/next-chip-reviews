@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { routes } from "@/app/routes";
 
 export const metadata: Metadata = { title: "Reset Password" };
 
@@ -21,7 +22,7 @@ export default function ResetPassword() {
       <div className="text-center flex flex-col gap-5">
         <Link
           className="text-sm hover:opacity-80 underline"
-          href="/auth/sign-in"
+          href={routes.signIn}
         >
           Sign In
         </Link>

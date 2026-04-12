@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { ChipCard } from "@/app/components/ChipCard";
 import { ChipsEmptyState } from "@/app/components/ChipsEmptyState";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
+import { routes } from "@/app/routes";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -84,7 +85,7 @@ export default async function BrandSingle({ params }: Props) {
             chips.map((chip, i) => (
               <Link
                 key={chip.id}
-                href={`/chips/${chip.slug}`}
+                href={`${routes.chips}/${chip.slug}`}
                 className="hover:opacity-80 transition"
               >
                 <ChipCard

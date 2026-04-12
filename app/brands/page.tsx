@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 import { BrandsEmptyState } from "../components/BrandsEmptyState";
 import { createSupabaseServerClient } from "../lib/supabase-server";
 import Link from "next/link";
+import { routes } from "@/app/routes";
 
 export default async function BrandsPage() {
   const supabase = await createSupabaseServerClient();
@@ -20,7 +21,7 @@ export default async function BrandsPage() {
     <div className="container mx-auto my-5">
       <div className="flex justify-between mb-3 items-center">
         <h2 className="text-lg font-bold">All Brands</h2>
-        <Link className="underline hover:opacity-80" href="/brands/new">
+        <Link className="underline hover:opacity-80" href={routes.brandsNew}>
           Add Brand
         </Link>
       </div>
@@ -28,7 +29,7 @@ export default async function BrandsPage() {
         {brands && brands.length > 0 ? (
           brands.map((brand) => (
             <Link
-              href={`/brands/${brand.slug}`}
+              href={`${routes.brands}/${brand.slug}`}
               key={brand.id}
               className="hover:opacity-80 transition"
             >

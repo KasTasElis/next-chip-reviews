@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { protectedPaths } from "./app/routes";
 
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request });
@@ -21,7 +22,6 @@ export async function proxy(request: NextRequest) {
   // Refresh session if expired — keeps the cookie alive
   const { data: { user } } = await supabase.auth.getUser();
 
-  const protectedPaths = ["/brands/new"];
   const isProtected = protectedPaths.some((p) =>
     request.nextUrl.pathname.startsWith(p)
   );

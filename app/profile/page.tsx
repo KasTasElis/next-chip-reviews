@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "My Profile" };
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
@@ -12,9 +11,8 @@ export default async function ProfilePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/auth/sign-in");
-  }
+  // proxy.ts guarantees auth before this page is reached
+  if (!user) return null;
 
   const { data: profile } = await supabase
     .from("profiles")

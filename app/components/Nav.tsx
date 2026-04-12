@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProfileMenu } from "./ProfileMenu";
 import { createSupabaseServerClient } from "../lib/supabase-server";
+import { routes } from "@/app/routes";
 
 export const Nav = async () => {
   const supabase = await createSupabaseServerClient();
@@ -20,10 +21,10 @@ export const Nav = async () => {
     <div className="flex-none">
       <ul className="menu menu-horizontal px-3 gap-1">
         <li>
-          <Link href="/brands/new">Add Brand</Link>
+          <Link href={routes.brandsNew}>Add Brand</Link>
         </li>
         <li>
-          <Link href="/chips/new">Add Chip</Link>
+          <Link href={routes.chipsNew}>Add Chip</Link>
         </li>
       </ul>
       <ProfileMenu avatarUrl={avatarUrl} />
@@ -32,7 +33,7 @@ export const Nav = async () => {
 
   const signedOutMenuJsx = (
     <div className="navbar-end">
-      <Link href="/auth/sign-in" className="btn btn-sm btn-primary">
+      <Link href={routes.signIn} className="btn btn-sm btn-primary">
         Sign In
       </Link>
     </div>

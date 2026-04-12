@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { chipFormSchema, type ChipFormInputs } from "./schema";
+import { routes } from "@/app/routes";
 import { createChip } from "./actions";
 import { supabase } from "@/app/lib/supabase";
 import type { Brand } from "@/supabase/types";
@@ -99,7 +100,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
       return;
     }
     toast.success(`${name} added!`);
-    router.push(`/chips/${result.slug}`);
+    router.push(`${routes.chips}/${result.slug}`);
   };
 
   return (

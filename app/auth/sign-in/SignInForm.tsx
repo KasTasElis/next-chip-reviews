@@ -7,6 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/app/lib/supabase";
+import { routes } from "@/app/routes";
 import { toast } from "sonner";
 import { use } from "react";
 import { useRouter } from "next/navigation";
@@ -120,14 +121,14 @@ export default function SignIn({
       <div className="text-center flex flex-col gap-5">
         <Link
           className="text-sm hover:opacity-80 underline"
-          href="/auth/reset-password"
+          href={routes.resetPassword}
         >
           Forgot Password?
         </Link>
 
         <Link
           className="text-sm hover:opacity-80 underline"
-          href="/auth/sign-up"
+          href={routes.signUp}
         >
           Sign Up
         </Link>

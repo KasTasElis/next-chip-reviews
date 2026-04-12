@@ -6,6 +6,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/app/lib/supabase";
+import { routes } from "@/app/routes";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
 
@@ -43,7 +44,7 @@ export default function SignUp() {
 
     reset();
     toast.success("Sign up success! You may sign in. ☺️");
-    redirect("/auth/sign-in");
+    redirect(routes.signIn);
   };
 
   return (
@@ -116,7 +117,7 @@ export default function SignUp() {
       <div className="text-center flex flex-col gap-5">
         <Link
           className="text-sm hover:opacity-80 underline"
-          href="/auth/sign-in"
+          href={routes.signIn}
         >
           Sign In
         </Link>

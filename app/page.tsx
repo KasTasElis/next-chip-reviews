@@ -11,6 +11,7 @@ import { ChipCard } from "./components/ChipCard";
 import { ChipsEmptyState } from "./components/ChipsEmptyState";
 import { createSupabaseServerClient } from "./lib/supabase-server";
 import Link from "next/link";
+import { routes } from "@/app/routes";
 
 export default async function Home() {
   const supabase = await createSupabaseServerClient();
@@ -47,7 +48,7 @@ export default async function Home() {
       <div className="container mx-auto my-5 mb-7">
         <div className="flex justify-between mb-3 items-center">
           <h2 className="text-lg font-bold">⭐️ Top Rated 10</h2>
-          <Link href="/chips" className="underline hover:opacity-80">
+          <Link href={routes.chips} className="underline hover:opacity-80">
             See All
           </Link>
         </div>
@@ -56,7 +57,7 @@ export default async function Home() {
           {chips && chips.length > 0 ? (
             chips.map((chip, i) => (
               <Link
-                href={`/chips/${chip.slug}`}
+                href={`${routes.chips}/${chip.slug}`}
                 key={chip.id}
                 className="hover:opacity-80 transition"
               >
@@ -78,7 +79,7 @@ export default async function Home() {
       <div className="container mx-auto my-5">
         <div className="flex justify-between mb-3 items-center">
           <h2 className="text-lg font-bold">Brands</h2>
-          <Link className="underline hover:opacity-80" href={"/brands"}>
+          <Link className="underline hover:opacity-80" href={routes.brands}>
             See All
           </Link>
         </div>
@@ -87,7 +88,7 @@ export default async function Home() {
           {brands && brands.length > 0 ? (
             brands.map((brand) => (
               <Link
-                href={`/brands/${brand.slug}`}
+                href={`${routes.brands}/${brand.slug}`}
                 key={brand.id}
                 className="hover:opacity-80 transition"
               >

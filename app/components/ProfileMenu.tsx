@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { SignOutButton } from "./SignOutButton";
+import { routes } from "@/app/routes";
 
 export const ProfileMenu = ({ avatarUrl }: { avatarUrl: string | null }) => (
   <div className="dropdown dropdown-end">
@@ -26,7 +27,7 @@ export const ProfileMenu = ({ avatarUrl }: { avatarUrl: string | null }) => (
       className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow gap-3"
     >
       <li>
-        <Link className="btn btn-sm btn-outline btn-primary" href="/profile">
+        <Link className="btn btn-sm btn-outline btn-primary" href={routes.profile}>
           My Profile
         </Link>
       </li>

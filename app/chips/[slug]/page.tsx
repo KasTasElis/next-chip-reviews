@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import type { Metadata } from "next";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
+import { routes } from "@/app/routes";
 import ReviewSection from "./ReviewSection";
 import ReviewList from "./ReviewList";
 import StarRating from "@/app/components/StarRating";
@@ -85,7 +86,7 @@ export default async function ChipsSingle({ params }: Props) {
 
           {brand && (
             <Link
-              href={`/brands/${brand.slug}`}
+              href={`${routes.brands}/${brand.slug}`}
               className="flex items-center gap-2 hover:opacity-80 transition w-fit"
             >
               <div className="avatar">

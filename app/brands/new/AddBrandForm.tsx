@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import { brandFormSchema, type BrandFormInputs } from "./schema";
+import { routes } from "@/app/routes";
 import { createBrand } from "./actions";
 import { supabase } from "@/app/lib/supabase";
 
@@ -96,7 +97,7 @@ export default function AddBrand() {
       return;
     }
     toast.success(`${name} added!`);
-    router.push(`/brands/${result.slug}`);
+    router.push(`${routes.brands}/${result.slug}`);
   };
 
   return (
