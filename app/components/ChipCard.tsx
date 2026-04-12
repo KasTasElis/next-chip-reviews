@@ -9,12 +9,14 @@ export const ChipCard = ({
   photo_url,
   rating,
   reviewCount,
+  priority,
 }: {
   name: string;
   photo_url?: string | null;
   description?: string | null;
   rating?: number;
   reviewCount?: number;
+  priority?: boolean;
 }) => {
   return (
     <div className="card bg-base-100 shadow-sm">
@@ -24,6 +26,8 @@ export const ChipCard = ({
           alt={name}
           fill
           className="object-cover"
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          priority={priority}
         />
       </figure>
       <div className="card-body">

@@ -9,10 +9,14 @@ export const ProfileMenu = ({ avatarUrl }: { avatarUrl: string | null }) => (
     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
       <div className="w-10 rounded-full relative">
         <Image
-          src={avatarUrl ?? "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"}
+          src={
+            avatarUrl ??
+            "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+          }
           alt="user profile photo"
           className="object-cover"
           fill
+          sizes="40px"
         />
       </div>
     </div>

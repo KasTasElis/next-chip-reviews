@@ -55,7 +55,7 @@ export default async function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {chips && chips.length > 0 ? (
-            chips.map((chip) => (
+            chips.map((chip, i) => (
               <Link
                 href={`/chips/${chip.slug}`}
                 key={chip.id}
@@ -66,6 +66,7 @@ export default async function Home() {
                   photo_url={chip.photo_url}
                   rating={chip.average_rating}
                   reviewCount={chip.review_count}
+                  priority={i === 0}
                 />
               </Link>
             ))

@@ -62,6 +62,7 @@ export default async function BrandSingle({ params }: Props) {
               alt={brand.name}
               fill
               className="object-cover rounded-xl"
+              sizes="96px"
             />
           </div>
         </div>
@@ -80,7 +81,7 @@ export default async function BrandSingle({ params }: Props) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {chips && chips.length > 0 ? (
-            chips.map((chip) => (
+            chips.map((chip, i) => (
               <Link
                 key={chip.id}
                 href={`/chips/${chip.slug}`}
@@ -91,6 +92,7 @@ export default async function BrandSingle({ params }: Props) {
                   photo_url={chip.photo_url}
                   rating={chip.average_rating}
                   reviewCount={chip.review_count}
+                  priority={i === 0}
                 />
               </Link>
             ))

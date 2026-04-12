@@ -73,6 +73,8 @@ export default async function ChipsSingle({ params }: Props) {
               alt={chip.name}
               className="object-cover"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
             />
           </figure>
         </div>
@@ -96,6 +98,7 @@ export default async function ChipsSingle({ params }: Props) {
                     alt={brand.name}
                     fill
                     className="object-fit"
+                    sizes="32px"
                   />
                 </div>
               </div>
