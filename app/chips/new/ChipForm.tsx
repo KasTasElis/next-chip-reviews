@@ -2,11 +2,11 @@
 
 import clsx from "clsx";
 import slugify from "slugify";
-import { useForm, useWatch, SubmitHandler } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { chipFormSchema, type ChipFormInputs } from "./schema";
 import { createChip } from "./actions";
 import { supabase } from "@/app/lib/supabase";
@@ -28,7 +28,6 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     return () => {
@@ -52,18 +51,23 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
     formState: { errors, isSubmitting },
   } = useForm<ChipFormInputs>({ resolver: zodResolver(chipFormSchema) });
 
-  const watchedName = useWatch({ control, name: "name", defaultValue: "" });
-  const slugPreview = watchedName
-    ? slugify(watchedName, { lower: true, strict: true })
-    : "";
+  const [watchedName, watchedBrandId] = useWatch({
+    control,
+    name: ["name", "brand_id_fk"],
+    defaultValue: { name: "", brand_id_fk: "" },
+  });
+  const selectedBrand = brands.find(
+    (brand) => brand.id === Number(watchedBrandId),
+  );
+  const prelimSlug = `${selectedBrand?.name ? `${selectedBrand.name} ` : ""}${watchedName ?? ""}`;
 
-  const onSubmit: SubmitHandler<ChipFormInputs> = async ({
+  const slug = slugify(prelimSlug, { lower: true, strict: true });
+
+  const onSubmit = async ({
     name,
     description,
     brand_id_fk,
-  }) => {
-    const slug = slugify(name, { lower: true, strict: true });
-
+  }: ChipFormInputs) => {
     let photo_url: string | undefined;
     if (photoFile) {
       const ext = getExtension(photoFile.type);
@@ -103,7 +107,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
       <h1 className="text-2xl font-semibold mb-6">Add a Chip</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-        {errors.root && (
+        {errors.root ? (
           <div role="alert" className="alert alert-error">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -120,7 +124,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
             </svg>
             <span>{errors.root.message}</span>
           </div>
-        )}
+        ) : null}
 
         <fieldset className="fieldset">
           <legend className="fieldset-legend">Name</legend>
@@ -130,12 +134,12 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
             placeholder="e.g. Sour Cream & Onion"
             className={clsx("input w-full", errors.name && "input-error")}
           />
+          {slug ? (
+            <p className="text-base-content/50 text-xs mt-1">chips/{slug}</p>
+          ) : null}
+
           {errors.name ? (
             <p className="text-error text-xs mt-1">{errors.name.message}</p>
-          ) : slugPreview ? (
-            <p className="text-base-content/50 text-xs mt-1">
-              chips/{slugPreview}
-            </p>
           ) : null}
         </fieldset>
 
@@ -167,11 +171,11 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
               </option>
             ))}
           </select>
-          {errors.brand_id_fk && (
+          {errors.brand_id_fk ? (
             <p className="text-error text-xs mt-1">
               {errors.brand_id_fk.message}
             </p>
-          )}
+          ) : null}
         </fieldset>
 
         <fieldset className="fieldset">
@@ -221,7 +225,6 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
               </div>
             )}
             <input
-              ref={fileInputRef}
               type="file"
               accept="image/*"
               className="hidden"
@@ -233,10 +236,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={clsx(
-            "btn btn-primary mt-2",
-            isSubmitting && "btn-disabled",
-          )}
+          className="btn btn-primary mt-2"
         >
           {isSubmitting ? (
             <span className="loading loading-spinner" />
