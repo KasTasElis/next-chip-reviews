@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
 import clsx from "clsx";
@@ -37,18 +38,15 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
 
   useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl !== profile.avatar_url) {
+      if (previewUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
-  }, [previewUrl, profile.avatar_url]);
+  }, [previewUrl]);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (previewUrl && previewUrl !== profile.avatar_url) {
-      URL.revokeObjectURL(previewUrl);
-    }
     setAvatarFile(file);
     setPreviewUrl(URL.createObjectURL(file));
   }
@@ -82,13 +80,9 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
         return;
       }
 
-      // Append a timestamp to bust CDN/browser cache after each upload (file path stays the same via upsert)
-      avatar_url = supabase.storage
-        .from("avatars")
-        // eslint-disable-next-line react-hooks/purity
-        .getPublicUrl(uploadData.path).data.publicUrl + `?t=${Date.now()}`;
-
-      console.log({ avatar_url, uploadError, uploadData });
+      avatar_url =
+        supabase.storage.from("avatars").getPublicUrl(uploadData.path).data
+          .publicUrl + `?t=${Date.now()}`;
     }
 
     const result = await updateProfile({ username, avatar_url });
