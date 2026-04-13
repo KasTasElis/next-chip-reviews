@@ -8,6 +8,7 @@ import ReviewSection from "./ReviewSection";
 import ReviewList from "./ReviewList";
 import StarRating from "@/app/components/StarRating";
 import Image from "next/image";
+import { Timestamps } from "@/app/components/Timestamps";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -16,7 +17,7 @@ const getChip = cache(async (slug: string) => {
   const { data } = await supabase
     .from("chips_with_stats")
     .select(
-      "id, name, description, slug, photo_url, average_rating, review_count, brands(name, slug, logo_url)",
+      "id, name, description, slug, photo_url, average_rating, review_count, created_at, updated_at, brands(name, slug, logo_url)",
     )
     .eq("slug", slug)
     .single();
@@ -29,7 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!chip) return {};
 
   const desc = chip.description
-    ? chip.description.slice(0, 155) + (chip.description.length > 155 ? "…" : "")
+    ? chip.description.slice(0, 155) +
+      (chip.description.length > 155 ? "…" : "")
     : `Read community reviews for ${chip.name}.`;
 
   return {
@@ -53,7 +55,7 @@ export default async function ChipsSingle({ params }: Props) {
   const { data: reviews } = await supabase
     .from("reviews")
     .select(
-      "id, rating, review, photo_url, created_at, user_id_fk, profiles(username)",
+      "id, rating, review, photo_url, created_at, updated_at, user_id_fk, profiles(username)",
     )
     .eq("chips_id_fk", chip.id)
     .order("created_at", { ascending: false });
@@ -110,6 +112,11 @@ export default async function ChipsSingle({ params }: Props) {
           {chip.description && (
             <p className="text-sm opacity-70">{chip.description}</p>
           )}
+
+          <Timestamps
+            created_at={chip.created_at}
+            updated_at={chip.updated_at}
+          />
 
           <ReviewSection chipId={chip.id} chipSlug={chip.slug} user={user} />
         </div>

@@ -47,12 +47,18 @@ export async function updateReview(reviewId: number, data: unknown) {
     .select("user_id_fk")
     .eq("id", reviewId)
     .single();
+
+  // TODO: RLS should take care of this?
   if (!existing || existing.user_id_fk !== user.id)
     return { error: "Forbidden" };
 
   const { error } = await supabase
     .from("reviews")
-    .update({ rating: parsed.data.rating, review: parsed.data.review })
+    .update({
+      rating: parsed.data.rating,
+      review: parsed.data.review,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", reviewId);
 
   if (error) return { error: error.message };

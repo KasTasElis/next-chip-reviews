@@ -7,7 +7,7 @@ import { z } from "zod";
 import clsx from "clsx";
 import { toast } from "sonner";
 import { updateReview, deleteReview } from "./actions";
-
+import { Timestamps } from "@/app/components/Timestamps";
 const reviewSchema = z.object({
   rating: z.number().int().min(1, "Select a rating").max(5),
   review: z.string().min(1, "Review cannot be empty"),
@@ -21,6 +21,7 @@ export type Review = {
   review: string;
   photo_url: string | null;
   created_at: string;
+  updated_at: string | null;
   user_id_fk: string;
   profiles: { username: string } | { username: string }[] | null;
 };
@@ -53,7 +54,10 @@ export default function ReviewCard({
     defaultValues: { rating: review.rating, review: review.review },
   });
 
-  const [rating, reviewText] = useWatch({ control, name: ["rating", "review"] });
+  const [rating, reviewText] = useWatch({
+    control,
+    name: ["rating", "review"],
+  });
 
   const submitEdit = useCallback<SubmitHandler<Inputs>>(
     async (data) => {
@@ -95,15 +99,6 @@ export default function ReviewCard({
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium">{username}</span>
           <div className="flex items-center gap-1">
-            <span className="text-xs opacity-50">
-              {new Date(review.created_at).toLocaleDateString("en-GB", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </span>
             {isOwner && (
               <>
                 <button
@@ -176,6 +171,12 @@ export default function ReviewCard({
             className="mt-3 max-h-64 max-w-full object-contain rounded-box"
           />
         )}
+        <div className="mt-3">
+          <Timestamps
+            created_at={review.created_at}
+            updated_at={review.updated_at}
+          />
+        </div>
       </div>
 
       <dialog ref={modalRef} className="modal">
