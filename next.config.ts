@@ -9,16 +9,12 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "img.daisyui.com",
-        port: "",
         pathname: "/**",
-        search: "",
       },
       {
         protocol: "https",
         hostname: "vtbzagduqkqkxtdchpmb.supabase.co",
-        port: "",
         pathname: "/storage/**",
-        search: "",
       },
     ],
   },

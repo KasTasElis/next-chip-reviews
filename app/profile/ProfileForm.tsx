@@ -82,9 +82,13 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
         return;
       }
 
+      // Append a timestamp to bust CDN/browser cache after each upload (file path stays the same via upsert)
       avatar_url = supabase.storage
         .from("avatars")
-        .getPublicUrl(uploadData.path).data.publicUrl;
+        // eslint-disable-next-line react-hooks/purity
+        .getPublicUrl(uploadData.path).data.publicUrl + `?t=${Date.now()}`;
+
+      console.log({ avatar_url, uploadError, uploadData });
     }
 
     const result = await updateProfile({ username, avatar_url });

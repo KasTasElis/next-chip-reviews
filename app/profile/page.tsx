@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "My Profile" };
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
-import ProfileForm from "./profile-form";
+import ProfileForm from "./ProfileForm";
 
 export default async function ProfilePage() {
   const supabase = await createSupabaseServerClient();
