@@ -31,3 +31,4 @@ export type Database = MergeDeep<
 export type Chip = Tables<"chips">;
 export type Brand = Tables<"brands">;
 export type Review = Tables<"reviews">;
+export type Profile = Tables<"profiles">;

@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { profileSchema, type ProfileInputs } from "./schema";
 import { updateProfile } from "./actions";
 import { supabase } from "@/app/lib/supabase";
+import type { Profile } from "@/supabase/types";
 
 function getExtension(mimeType: string): string {
   const map: Record<string, string> = {
@@ -21,13 +22,6 @@ function getExtension(mimeType: string): string {
   };
   return map[mimeType] ?? "jpg";
 }
-
-type Profile = {
-  id: string;
-  username: string | null;
-  email: string | null;
-  avatar_url: string | null;
-};
 
 export default function ProfileForm({ profile }: { profile: Profile }) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -211,6 +205,33 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
           )}
         </button>
       </form>
+
+      <div className="text-base-content/40 text-xs text-center mt-4 flex flex-col gap-0.5">
+        <p suppressHydrationWarning>
+          Member since:{" "}
+          {new Date(profile.created_at).toLocaleDateString("en-GB", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZoneName: "short",
+          })}
+        </p>
+        {profile.updated_at && (
+          <p suppressHydrationWarning>
+            Last updated:{" "}
+            {new Date(profile.updated_at).toLocaleDateString("en-GB", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZoneName: "short",
+            })}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

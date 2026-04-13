@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "My Profile" };
+import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import ProfileForm from "./ProfileForm";
 
@@ -16,18 +17,11 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, email, avatar_url")
+    .select("*")
     .eq("id", user.id)
     .single();
 
-  return (
-    <ProfileForm
-      profile={{
-        id: user.id,
-        username: profile?.username ?? null,
-        email: profile?.email ?? user.email ?? null,
-        avatar_url: profile?.avatar_url ?? null,
-      }}
-    />
-  );
+  if (!profile) notFound();
+
+  return <ProfileForm profile={profile} />;
 }
