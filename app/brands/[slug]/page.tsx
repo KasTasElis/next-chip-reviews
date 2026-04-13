@@ -5,6 +5,7 @@ import { cache } from "react";
 import type { Metadata } from "next";
 import { ChipCard } from "@/app/components/ChipCard";
 import { ChipsEmptyState } from "@/app/components/ChipsEmptyState";
+import { Timestamps } from "@/app/components/Timestamps";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import { routes } from "@/app/routes";
 
@@ -14,7 +15,7 @@ const getBrand = cache(async (slug: string) => {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("brands")
-    .select("id, name, description, slug, logo_url")
+    .select("id, name, description, slug, logo_url, created_at, updated_at")
     .eq("slug", slug)
     .single();
   return data;
@@ -71,6 +72,7 @@ export default async function BrandSingle({ params }: Props) {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">{brand.name}</h1>
           <p className="text-sm opacity-70 max-w-prose">{brand.description}</p>
+          <Timestamps created_at={brand.created_at} updated_at={brand.updated_at} />
         </div>
       </div>
 
