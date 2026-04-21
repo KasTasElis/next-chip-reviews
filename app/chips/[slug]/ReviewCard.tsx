@@ -1,13 +1,15 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
-import { useForm, useWatch, SubmitHandler } from "react-hook-form";
+import { useRef, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import clsx from "clsx";
 import { toast } from "sonner";
 import { updateReview, deleteReview } from "./actions";
 import { Timestamps } from "@/app/components/Timestamps";
+import { UserProfile } from "@/app/components/UserProfile";
+import type { ReviewWithProfile } from "./queries";
 const reviewSchema = z.object({
   rating: z.number().int().min(1, "Select a rating").max(5),
   review: z.string().min(1, "Review cannot be empty"),
@@ -15,32 +17,18 @@ const reviewSchema = z.object({
 
 type Inputs = z.infer<typeof reviewSchema>;
 
-export type Review = {
-  id: number;
-  rating: number;
-  review: string;
-  photo_url: string | null;
-  created_at: string;
-  updated_at: string | null;
-  user_id_fk: string;
-  profiles: { username: string } | { username: string }[] | null;
-};
-
 export default function ReviewCard({
   review,
   userId,
 }: {
-  review: Review;
+  review: ReviewWithProfile;
   userId: string | null;
 }) {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const isOwner = userId === review.user_id_fk;
-  const username =
-    (Array.isArray(review.profiles)
-      ? review.profiles[0]?.username
-      : review.profiles?.username) ?? "Anonymous";
+  const profile = review.profiles;
 
   const {
     handleSubmit,
@@ -59,23 +47,18 @@ export default function ReviewCard({
     name: ["rating", "review"],
   });
 
-  const submitEdit = useCallback<SubmitHandler<Inputs>>(
-    async (data) => {
-      const result = await updateReview(review.id, data);
-      if (result.error) {
-        setError("root", { message: result.error });
-        return;
-      }
-      toast.success("Review updated!");
-      modalRef.current?.close();
-    },
-    [review.id, setError, modalRef],
-  );
+  const onSubmitForm = (e: React.BaseSyntheticEvent) =>
+    handleSubmit(submitEdit)(e);
 
-  const onSubmitForm = useCallback(
-    (e: React.BaseSyntheticEvent) => handleSubmit(submitEdit)(e),
-    [handleSubmit, submitEdit],
-  );
+  const submitEdit = async (data: Inputs) => {
+    const result = await updateReview(review.id, data);
+    if (result.error) {
+      setError("root", { message: result.error });
+      return;
+    }
+    toast.success("Review updated!");
+    modalRef.current?.close();
+  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -97,7 +80,10 @@ export default function ReviewCard({
     <>
       <div className="card bg-base-100 shadow-sm p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">{username}</span>
+          <UserProfile
+            displayName={profile.username}
+            avatarUrl={profile.avatar_url ?? undefined}
+          />
           <div className="flex items-center gap-1">
             {isOwner && (
               <>

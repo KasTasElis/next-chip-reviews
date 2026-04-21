@@ -3,17 +3,22 @@ import React from "react";
 export default function StarRating({
   rating = 0,
   count = 0,
+  size = "sm",
 }: {
   rating?: number;
   count?: number;
+  size?: "sm" | "md" | "lg";
 }) {
   const displayRating = Math.round(rating * 2) / 2;
+  const textSize = size === "sm" ? "md" : size;
 
   return (
     <div className="flex items-center gap-1">
-      <span className="text-md">{rating}</span>
+      <span className={`text-${textSize}`}>{rating}</span>
 
-      <div className="rating rating-half rating-sm relative bottom-[1px]">
+      <div
+        className={`rating rating-half rating-${size} relative bottom-[1px]`}
+      >
         {[1, 2, 3, 4, 5].map((v) => (
           <React.Fragment key={v}>
             <input
@@ -34,7 +39,9 @@ export default function StarRating({
         ))}
       </div>
 
-      <span className="text-md opacity-50">({count})</span>
+      <span className={`text-${textSize} opacity-50`}>
+        ({count})
+      </span>
     </div>
   );
 }

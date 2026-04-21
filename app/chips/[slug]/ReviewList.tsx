@@ -1,12 +1,13 @@
 "use client";
 
-import ReviewCard, { type Review } from "./ReviewCard";
+import ReviewCard from "./ReviewCard";
+import type { ReviewWithProfile } from "./queries";
 
 export default function ReviewList({
   reviews,
   userId,
 }: {
-  reviews: Review[];
+  reviews: ReviewWithProfile[];
   userId: string | null;
 }) {
   if (!reviews.length) {

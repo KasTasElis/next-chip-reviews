@@ -9,6 +9,7 @@ import ReviewList from "./ReviewList";
 import StarRating from "@/app/components/StarRating";
 import Image from "next/image";
 import { Timestamps } from "@/app/components/Timestamps";
+import { reviewsQueryBuilder } from "./queries";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -52,13 +53,7 @@ export default async function ChipsSingle({ params }: Props) {
 
   if (!chip) notFound();
 
-  const { data: reviews } = await supabase
-    .from("reviews")
-    .select(
-      "id, rating, review, photo_url, created_at, updated_at, user_id_fk, profiles(username)",
-    )
-    .eq("chips_id_fk", chip.id)
-    .order("created_at", { ascending: false });
+  const { data: reviews } = await reviewsQueryBuilder(supabase, chip.id);
 
   const brand = Array.isArray(chip.brands) ? chip.brands[0] : chip.brands;
 
@@ -67,14 +62,14 @@ export default async function ChipsSingle({ params }: Props) {
       {/* Hero section */}
       <div className="flex flex-col md:flex-row gap-8 mb-10">
         <div className="md:w-1/2">
-          <figure className="relative h-48 bg-red-200">
+          <figure className="relative h-[30vh] bg-gray-900 rounded-xl overflow-hidden">
             <Image
               src={
                 chip.photo_url ??
                 "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
               }
               alt={chip.name}
-              className="object-cover"
+              className="object-scale-down"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               priority
@@ -84,7 +79,11 @@ export default async function ChipsSingle({ params }: Props) {
 
         <div className="md:w-1/2 flex flex-col gap-4">
           <h1 className="text-2xl font-bold">{chip.name}</h1>
-          <StarRating rating={chip.average_rating} count={chip.review_count} />
+          <StarRating
+            rating={chip.average_rating}
+            count={chip.review_count}
+            size="lg"
+          />
 
           {brand && (
             <Link
@@ -105,12 +104,12 @@ export default async function ChipsSingle({ params }: Props) {
                   />
                 </div>
               </div>
-              <span className="text-sm font-medium">{brand.name}</span>
+              <span className="text-xl font-medium">{brand.name}</span>
             </Link>
           )}
 
           {chip.description && (
-            <p className="text-sm opacity-70">{chip.description}</p>
+            <p className="text-md opacity-70">{chip.description}</p>
           )}
 
           <Timestamps
