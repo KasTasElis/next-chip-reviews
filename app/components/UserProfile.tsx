@@ -21,7 +21,7 @@ export function UserProfile({
           className="object-cover"
         />
       </div>
-      <span className="text-sm font-medium">{displayName}</span>
+      <span className="text-md font-medium">{displayName}</span>
     </div>
   );
 }

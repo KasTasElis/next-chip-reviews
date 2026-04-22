@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { updateReview, deleteReview } from "./actions";
 import { Timestamps } from "@/app/components/Timestamps";
 import { UserProfile } from "@/app/components/UserProfile";
+import Image from "next/image";
 import type { ReviewWithProfile } from "./queries";
 const reviewSchema = z.object({
   rating: z.number().int().min(1, "Select a rating").max(5),
@@ -136,7 +137,7 @@ export default function ReviewCard({
             )}
           </div>
         </div>
-        <div className="rating rating-sm mb-2">
+        <div className="rating rating-md mb-2">
           {[1, 2, 3, 4, 5].map((v) => (
             <input
               key={v}
@@ -148,14 +149,17 @@ export default function ReviewCard({
             />
           ))}
         </div>
-        <p className="text-sm">{review.review}</p>
+        <p className="text-md mb-3">{review.review}</p>
         {review.photo_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={review.photo_url}
-            alt="Review photo"
-            className="mt-3 max-h-64 max-w-full object-contain rounded-box"
-          />
+          <figure className="relative h-[24vh] bg-gray-900 rounded-xl overflow-hidden">
+            <Image
+              src={review.photo_url}
+              alt="Review photo"
+              className="object-scale-down"
+              fill
+              priority
+            />
+          </figure>
         )}
         <div className="mt-3">
           <Timestamps
