@@ -6,43 +6,17 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { chipFormSchema, type ChipFormInputs } from "./schema";
 import { routes } from "@/app/routes";
 import { createChip } from "./actions";
 import { supabase } from "@/app/lib/supabase";
 import type { Brand } from "@/supabase/types";
-
-function getExtension(mimeType: string): string {
-  const map: Record<string, string> = {
-    "image/png": "png",
-    "image/jpeg": "jpg",
-    "image/jpg": "jpg",
-    "image/svg+xml": "svg",
-    "image/webp": "webp",
-    "image/gif": "gif",
-  };
-  return map[mimeType] ?? "jpg";
-}
+import PhotoUpload from "@/app/components/PhotoUpload";
 
 export default function ChipForm({ brands }: { brands: Brand[] }) {
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [previewUrl]);
-
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPhotoFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
-  }
 
   const {
     register,
@@ -71,8 +45,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
   }: ChipFormInputs) => {
     let photo_url: string | undefined;
     if (photoFile) {
-      const ext = getExtension(photoFile.type);
-      const path = `${slug}.${ext}`;
+      const path = `${slug}.webp`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("chip-photos")
@@ -179,60 +152,12 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
           ) : null}
         </fieldset>
 
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">
-            Photo{" "}
-            <span className="text-base-content/40 font-normal">(optional)</span>
-          </legend>
-          <label
-            className={clsx(
-              "flex flex-col items-center justify-center w-full border-2 border-dashed rounded-box cursor-pointer hover:border-primary hover:bg-base-200 transition-colors overflow-hidden",
-              previewUrl ? "h-auto p-2" : "h-40 border-base-300",
-            )}
-          >
-            {previewUrl ? (
-              <div className="relative flex flex-col items-center gap-2 py-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={previewUrl}
-                  alt="Photo preview"
-                  className="max-h-48 max-w-full object-contain rounded"
-                />
-                <span className="text-xs text-base-content/50">
-                  Click to change
-                </span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2 text-base-content/50">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-                  />
-                </svg>
-                <span className="text-sm">
-                  Drop photo here or{" "}
-                  <span className="text-primary">browse</span>
-                </span>
-                <span className="text-xs">PNG, JPG, WebP up to 5MB</span>
-              </div>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          </label>
-        </fieldset>
+        <PhotoUpload
+          label="Photo"
+          optional
+          onChange={setPhotoFile}
+          aspect={4 / 3}
+        />
 
         <button
           type="submit"
