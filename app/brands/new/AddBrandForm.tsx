@@ -12,6 +12,7 @@ import { routes } from "@/app/routes";
 import { createBrand } from "./actions";
 import { supabase } from "@/app/lib/supabase";
 import PhotoUpload from "@/app/components/PhotoUpload";
+import { DevTool } from "@hookform/devtools";
 
 export default function AddBrand() {
   const router = useRouter();
@@ -73,8 +74,7 @@ export default function AddBrand() {
 
   return (
     <div className="w-full max-w-3xl min-w-80 mx-auto py-10 px-6">
-      <h1 className="text-2xl font-semibold mb-6">Add a Brand</h1>
-
+      <h1 className="text-2xl font-semibold mb-6">Add a brand</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         {errors.root && (
           <div role="alert" className="alert alert-error">
@@ -96,11 +96,11 @@ export default function AddBrand() {
         )}
 
         <fieldset className="fieldset">
-          <legend className="fieldset-legend">Name</legend>
+          <legend className="fieldset-legend">Name*</legend>
           <input
             {...register("name")}
             type="text"
-            placeholder="Brand name"
+            placeholder="Brand Name"
             className={clsx("input w-full", errors.name && "input-error")}
           />
           {errors.name ? (
@@ -116,13 +116,13 @@ export default function AddBrand() {
           <legend className="fieldset-legend">Description</legend>
           <textarea
             {...register("description")}
-            placeholder="A short description of the brand"
+            placeholder="Short brand description (optional)"
             className="textarea w-full h-32"
           />
         </fieldset>
 
         <PhotoUpload
-          label="Logo"
+          label="Logo*"
           onChange={(file) => {
             setLogoFile(file);
             if (file) setLogoError(null);
@@ -146,6 +146,7 @@ export default function AddBrand() {
           )}
         </button>
       </form>
+      {process.env.NODE_ENV !== "production" && <DevTool control={control} />}
     </div>
   );
 }
