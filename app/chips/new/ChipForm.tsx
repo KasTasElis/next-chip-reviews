@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import slugify from "slugify";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -13,8 +13,13 @@ import { createChip } from "./actions";
 import { supabase } from "@/app/lib/supabase";
 import type { Brand } from "@/supabase/types";
 import PhotoUpload from "@/app/components/PhotoUpload";
+import Autocomplete from "@/app/components/Autocomplete";
 
 export default function ChipForm({ brands }: { brands: Brand[] }) {
+  const brandOptions = brands.map((b) => ({
+    label: b.name,
+    value: String(b.id),
+  }));
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
@@ -101,7 +106,33 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
         ) : null}
 
         <fieldset className="fieldset">
-          <legend className="fieldset-legend">Name</legend>
+          <legend className="fieldset-legend">Brand Name</legend>
+          <Controller
+            name="brand_id_fk"
+            control={control}
+            render={({ field }) => (
+              <Autocomplete
+                options={brandOptions}
+                value={field.value ?? null}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                error={!!errors.brand_id_fk}
+                placeholder="Search brand name..."
+                onAdd={(val) => {
+                  console.log({ val });
+                }}
+              />
+            )}
+          />
+          {errors.brand_id_fk ? (
+            <p className="text-error text-xs mt-1">
+              {errors.brand_id_fk.message}
+            </p>
+          ) : null}
+        </fieldset>
+
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Flavor Name</legend>
           <input
             {...register("name")}
             type="text"
@@ -118,7 +149,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
         </fieldset>
 
         <fieldset className="fieldset">
-          <legend className="fieldset-legend">Description</legend>
+          <legend className="fieldset-legend">Flavor Description</legend>
           <textarea
             {...register("description")}
             placeholder="Describe the chip..."
@@ -126,35 +157,8 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
           />
         </fieldset>
 
-        <fieldset className="fieldset">
-          <legend className="fieldset-legend">Brand</legend>
-          <select
-            {...register("brand_id_fk")}
-            className={clsx(
-              "select w-full",
-              errors.brand_id_fk && "select-error",
-            )}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select a brand
-            </option>
-            {brands.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
-          </select>
-          {errors.brand_id_fk ? (
-            <p className="text-error text-xs mt-1">
-              {errors.brand_id_fk.message}
-            </p>
-          ) : null}
-        </fieldset>
-
         <PhotoUpload
-          label="Photo"
-          optional
+          label="Chip Packaging Photo"
           onChange={setPhotoFile}
           aspect={4 / 3}
         />
