@@ -13,6 +13,9 @@ import { createBrand } from "./actions";
 import { supabase } from "@/app/lib/supabase";
 import PhotoUpload from "@/app/components/PhotoUpload";
 import { DevTool } from "@hookform/devtools";
+import debounce from "debounce";
+
+const debouncedLog = debounce(() => console.log("boom"), 2000);
 
 export default function AddBrand() {
   const router = useRouter();
@@ -98,7 +101,12 @@ export default function AddBrand() {
         <fieldset className="fieldset">
           <legend className="fieldset-legend">Name*</legend>
           <input
-            {...register("name")}
+            {...register("name", {
+              onChange: () => {
+                debouncedLog();
+                //console.log("nameee");
+              },
+            })}
             type="text"
             placeholder="Brand Name"
             className={clsx("input w-full", errors.name && "input-error")}
@@ -107,7 +115,7 @@ export default function AddBrand() {
             <p className="text-error text-xs mt-1">{errors.name.message}</p>
           ) : slugPreview ? (
             <p className="text-base-content/50 text-xs mt-1">
-              brands/{slugPreview}
+              slug preview: brands/{slugPreview}
             </p>
           ) : null}
         </fieldset>

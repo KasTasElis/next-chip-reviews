@@ -4,7 +4,7 @@ import { z } from "zod";
 export const chipFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
-  brand_id_fk: z.string().min(1, "Brand is required"),
+  brand_id: z.string().min(1, "Brand is required"),
 });
 
 export type ChipFormInputs = z.infer<typeof chipFormSchema>;
@@ -19,7 +19,7 @@ export const chipSchema = chipFormSchema.extend({
     .refine((s) => !RESERVED_SLUGS.includes(s), {
       message: "That name is reserved — please choose a different one",
     }),
-  photo_url: z.url().optional(),
+  photo_url: z.url(),
 });
 
 export type ChipInputs = z.infer<typeof chipSchema>;

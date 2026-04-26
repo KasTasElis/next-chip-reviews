@@ -43,77 +43,88 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
-          id: number
-          logo_url: string | null
+          id: string
+          logo_url: string
           name: string
           slug: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
-          id?: number
-          logo_url?: string | null
+          id?: string
+          logo_url: string
           name: string
           slug: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
-          id?: number
-          logo_url?: string | null
+          id?: string
+          logo_url?: string
           name?: string
           slug?: string
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      chips: {
-        Row: {
-          brand_id_fk: number
-          created_at: string
-          description: string | null
-          id: number
-          name: string
-          photo_url: string | null
-          slug: string
-          updated_at: string | null
-          user_id_fk: string
-        }
-        Insert: {
-          brand_id_fk: number
-          created_at?: string
-          description?: string | null
-          id?: number
-          name: string
-          photo_url?: string | null
-          slug: string
-          updated_at?: string | null
-          user_id_fk?: string
-        }
-        Update: {
-          brand_id_fk?: number
-          created_at?: string
-          description?: string | null
-          id?: number
-          name?: string
-          photo_url?: string | null
-          slug?: string
-          updated_at?: string | null
-          user_id_fk?: string
+          user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "chips_brand_id_fk_fkey"
-            columns: ["brand_id_fk"]
+            foreignKeyName: "brands_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chips: {
+        Row: {
+          brand_id: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          photo_url: string
+          slug: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          photo_url: string
+          slug: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          photo_url?: string
+          slug?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chips_brand_id_fkey"
+            columns: ["brand_id"]
             isOneToOne: false
             referencedRelation: "brands"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "chips_user_id_fk_fkey"
-            columns: ["user_id_fk"]
+            foreignKeyName: "chips_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -133,7 +144,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email: string
-          id: string
+          id?: string
           updated_at?: string | null
           username: string
         }
@@ -149,53 +160,53 @@ export type Database = {
       }
       reviews: {
         Row: {
-          chips_id_fk: number
+          chip_id: string
           created_at: string
-          id: number
+          id: string
           photo_url: string | null
           rating: number
           review: string
           updated_at: string | null
-          user_id_fk: string
+          user_id: string
         }
         Insert: {
-          chips_id_fk: number
+          chip_id: string
           created_at?: string
-          id?: number
+          id?: string
           photo_url?: string | null
           rating: number
           review: string
           updated_at?: string | null
-          user_id_fk: string
+          user_id?: string
         }
         Update: {
-          chips_id_fk?: number
+          chip_id?: string
           created_at?: string
-          id?: number
+          id?: string
           photo_url?: string | null
           rating?: number
           review?: string
           updated_at?: string | null
-          user_id_fk?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "reviews_chips_id_fk_fkey"
-            columns: ["chips_id_fk"]
+            foreignKeyName: "reviews_chip_id_fkey"
+            columns: ["chip_id"]
             isOneToOne: false
             referencedRelation: "chips"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "reviews_chips_id_fk_fkey"
-            columns: ["chips_id_fk"]
+            foreignKeyName: "reviews_chip_id_fkey"
+            columns: ["chip_id"]
             isOneToOne: false
             referencedRelation: "chips_with_stats"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "reviews_user_id_fk_fkey"
-            columns: ["user_id_fk"]
+            foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -207,28 +218,28 @@ export type Database = {
       chips_with_stats: {
         Row: {
           average_rating: number | null
-          brand_id_fk: number | null
+          brand_id: string | null
           created_at: string | null
           description: string | null
-          id: number | null
+          id: string | null
           name: string | null
           photo_url: string | null
           review_count: number | null
           slug: string | null
           updated_at: string | null
-          user_id_fk: string | null
+          user_id: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "chips_brand_id_fk_fkey"
-            columns: ["brand_id_fk"]
+            foreignKeyName: "chips_brand_id_fkey"
+            columns: ["brand_id"]
             isOneToOne: false
             referencedRelation: "brands"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "chips_user_id_fk_fkey"
-            columns: ["user_id_fk"]
+            foreignKeyName: "chips_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -237,7 +248,15 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      find_similar_brands: {
+        Args: { query: string; threshold?: number }
+        Returns: {
+          id: string
+          name: string
+          score: number
+          slug: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

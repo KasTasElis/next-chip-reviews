@@ -10,7 +10,7 @@ const reviewSchema = z.object({
   photo_url: z.string().url().optional(),
 });
 
-export async function submitReview(chipId: number, data: unknown) {
+export async function submitReview(chipId: string, data: unknown) {
   const parsed = reviewSchema.safeParse(data);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
@@ -21,7 +21,7 @@ export async function submitReview(chipId: number, data: unknown) {
   if (!user) return { error: "Unauthorized" };
 
   const { error } = await supabase.from("reviews").insert({
-    chips_id_fk: chipId,
+    chip_id: chipId,
     user_id_fk: user.id,
     rating: parsed.data.rating,
     review: parsed.data.review,
@@ -32,7 +32,7 @@ export async function submitReview(chipId: number, data: unknown) {
   return { success: true };
 }
 
-export async function updateReview(reviewId: number, data: unknown) {
+export async function updateReview(reviewId: string, data: unknown) {
   const parsed = reviewSchema.safeParse(data);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
@@ -44,13 +44,12 @@ export async function updateReview(reviewId: number, data: unknown) {
 
   const { data: existing } = await supabase
     .from("reviews")
-    .select("user_id_fk")
+    .select("user_id")
     .eq("id", reviewId)
     .single();
 
   // TODO: RLS should take care of this?
-  if (!existing || existing.user_id_fk !== user.id)
-    return { error: "Forbidden" };
+  if (!existing || existing.user_id !== user.id) return { error: "Forbidden" };
 
   const { error } = await supabase
     .from("reviews")
@@ -66,7 +65,7 @@ export async function updateReview(reviewId: number, data: unknown) {
   return { success: true };
 }
 
-export async function deleteReview(reviewId: number) {
+export async function deleteReview(reviewId: string) {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -75,11 +74,10 @@ export async function deleteReview(reviewId: number) {
 
   const { data: existing } = await supabase
     .from("reviews")
-    .select("user_id_fk")
+    .select("user_id")
     .eq("id", reviewId)
     .single();
-  if (!existing || existing.user_id_fk !== user.id)
-    return { error: "Forbidden" };
+  if (!existing || existing.user_id !== user.id) return { error: "Forbidden" };
 
   const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
 

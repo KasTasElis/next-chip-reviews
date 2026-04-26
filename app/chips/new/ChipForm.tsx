@@ -24,6 +24,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
   }));
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoError, setPhotoError] = useState<string>();
 
   const {
     register,
@@ -35,52 +36,59 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
 
   const [watchedName, watchedBrandId] = useWatch({
     control,
-    name: ["name", "brand_id_fk"],
-    defaultValue: { name: "", brand_id_fk: "" },
+    name: ["name", "brand_id"],
+    defaultValue: { name: "", brand_id: "" },
   });
-  const selectedBrand = brands.find(
-    (brand) => brand.id === Number(watchedBrandId),
-  );
+  const selectedBrand = brands.find((brand) => brand.id === watchedBrandId);
   const prelimSlug = `${selectedBrand?.name ? `${selectedBrand.name} ` : ""}${watchedName ?? ""}`;
 
   const slug = slugify(prelimSlug, { lower: true, strict: true });
 
-  const onSubmit = async ({
-    name,
-    description,
-    brand_id_fk,
-  }: ChipFormInputs) => {
-    let photo_url: string | undefined;
-    if (photoFile) {
-      const path = `${slug}.webp`;
+  const onSubmit = async ({ name, description, brand_id }: ChipFormInputs) => {
+    setPhotoError(undefined);
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("chip-photos")
-        .upload(path, photoFile);
-
-      if (uploadError) {
-        setError("root", { message: uploadError.message });
-        return;
-      }
-
-      photo_url = supabase.storage
-        .from("chip-photos")
-        .getPublicUrl(uploadData.path).data.publicUrl;
+    if (!photoFile) {
+      setPhotoError("Please add a photo.");
+      return;
     }
 
-    const result = await createChip({
+    const path = `${slug}.webp`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("chip-photos")
+      .upload(path, photoFile);
+
+    if (uploadError) {
+      setPhotoError(uploadError.message);
+      return;
+    }
+
+    const photo_url = supabase.storage
+      .from("chip-photos")
+      .getPublicUrl(uploadData.path).data.publicUrl;
+
+    const { error: createChipError, slug: createdChipSlug } = await createChip({
       name,
       description,
-      brand_id_fk,
+      brand_id,
       slug,
       photo_url,
     });
-    if (result?.error) {
-      setError("root", { message: result.error });
+
+    if (createChipError) {
+      setError("root", { message: createChipError });
+
+      // todo: clean up potentially stranded images
+      // console.log("path: ", uploadData.path, uploadData.fullPath);
+      // const { error: cleanUpErr, data: cleanUpData } = await supabase.storage
+      //   .from("chip-photos")
+      //   .remove([uploadData.fullPath]);
+
+      // console.log({ cleanUpErr, cleanUpData });
       return;
     }
     toast.success(`${name} added!`);
-    router.push(`${routes.chips}/${result.slug}`);
+    router.push(`${routes.chips}/${createdChipSlug}`);
   };
 
   return (
@@ -110,7 +118,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
         <fieldset className="fieldset">
           <legend className="fieldset-legend">Brand Name*</legend>
           <Controller
-            name="brand_id_fk"
+            name="brand_id"
             control={control}
             render={({ field }) => (
               <Autocomplete
@@ -118,15 +126,13 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
                 value={field.value ?? null}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
-                error={!!errors.brand_id_fk}
+                error={!!errors.brand_id}
                 placeholder="e.g. Lay's"
               />
             )}
           />
-          {errors.brand_id_fk ? (
-            <p className="text-error text-xs mt-1">
-              {errors.brand_id_fk.message}
-            </p>
+          {errors.brand_id ? (
+            <p className="text-error text-xs mt-1">{errors.brand_id.message}</p>
           ) : null}
           <p className="text-xs mt-1">
             Can&apos;t find a brand?{" "}
@@ -164,8 +170,12 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
 
         <PhotoUpload
           label="Package Photo*"
-          onChange={setPhotoFile}
+          onChange={(file) => {
+            setPhotoError(undefined);
+            setPhotoFile(file);
+          }}
           aspect={4 / 3}
+          error={photoError}
         />
 
         <button

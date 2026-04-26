@@ -27,7 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!brand) return {};
 
   const desc = brand.description
-    ? brand.description.slice(0, 155) + (brand.description.length > 155 ? "…" : "")
+    ? brand.description.slice(0, 155) +
+      (brand.description.length > 155 ? "…" : "")
     : `Browse all chips by ${brand.name}.`;
 
   return {
@@ -48,7 +49,7 @@ export default async function BrandSingle({ params }: Props) {
   const { data: chips } = await supabase
     .from("chips_with_stats")
     .select("id, name, slug, photo_url, average_rating, review_count")
-    .eq("brand_id_fk", brand.id)
+    .eq("brand_id", brand.id)
     .order("average_rating", { ascending: false });
   const fallbackImg =
     "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
@@ -72,7 +73,10 @@ export default async function BrandSingle({ params }: Props) {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">{brand.name}</h1>
           <p className="text-sm opacity-70 max-w-prose">{brand.description}</p>
-          <Timestamps created_at={brand.created_at} updated_at={brand.updated_at} />
+          <Timestamps
+            created_at={brand.created_at}
+            updated_at={brand.updated_at}
+          />
         </div>
       </div>
 

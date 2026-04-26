@@ -28,7 +28,7 @@ export default function ReviewCard({
   const modalRef = useRef<HTMLDialogElement>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const isOwner = userId === review.user_id_fk;
+  const isOwner = userId === review.user_id;
   const profile = review.profiles;
 
   const {

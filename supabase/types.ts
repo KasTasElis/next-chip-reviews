@@ -11,16 +11,16 @@ export type Database = MergeDeep<
         chips_with_stats: {
           Row: {
             average_rating: number;
-            brand_id_fk: number;
+            brand_id: string;
             created_at: string;
             description: string | null;
-            id: number;
+            id: string;
             name: string;
-            photo_url: string | null;
+            photo_url: string;
             review_count: number;
             slug: string;
             updated_at: string | null;
-            user_id_fk: string;
+            user_id: string;
           };
         };
       };

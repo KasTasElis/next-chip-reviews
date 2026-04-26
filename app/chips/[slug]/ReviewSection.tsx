@@ -27,7 +27,7 @@ function ReviewForm({
   userId,
   onSuccess,
 }: {
-  chipId: number;
+  chipId: string;
   userId: string;
   onSuccess: () => void;
 }) {
@@ -160,7 +160,7 @@ export default function ReviewSection({
   chipSlug,
   user,
 }: {
-  chipId: number;
+  chipId: string;
   chipSlug: string;
   user: User | null;
 }) {
