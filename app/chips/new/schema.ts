@@ -4,7 +4,7 @@ import { z } from "zod";
 export const chipFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
-  brand_id: z.string().min(1, "Brand is required"),
+  brand_id: z.string("Brand is required").min(1, "Brand name required"),
 });
 
 export type ChipFormInputs = z.infer<typeof chipFormSchema>;

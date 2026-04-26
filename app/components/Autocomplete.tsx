@@ -134,12 +134,17 @@ export default function Autocomplete({
         }
         className={clsx("input w-full", error && "input-error")}
       />
-      {isOpen && (filtered.length > 0 || showAddOption) && (
+      {isOpen && (filtered.length > 0 || showAddOption || trimmed.length > 0) && (
         <ul
           id="autocomplete-listbox"
           role="listbox"
           className="menu bg-base-100 rounded-box shadow-lg border border-base-200 absolute z-10 w-full mt-1 max-h-60 overflow-y-auto p-1"
         >
+          {filtered.length === 0 && !showAddOption && (
+            <li className="px-4 py-2 text-sm text-base-content/50 select-none">
+              No results found
+            </li>
+          )}
           {filtered.map((option, index) => (
             <li
               key={option.value}
