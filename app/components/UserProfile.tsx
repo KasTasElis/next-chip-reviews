@@ -15,22 +15,22 @@ const getInitials = (name: string): string => {
   return `${firstNameInitial}${lastNameInitial}`.toUpperCase();
 };
 
-// todo
-// const getColorClass = (initials: string): string => {
-//   const colors = [
-//     "bg-red-500",
-//     "bg-green-500",
-//     "bg-blue-500",
-//     "bg-yellow-500",
-//     "bg-purple-500",
-//     "bg-pink-500",
-//     "bg-indigo-500",
-//     "bg-gray-500",
-//   ];
+const getColorClass = (seed: string): string => {
+  const charCode = seed.charCodeAt(0) - 97;
 
-//   // Simple hash function to get a consistent color for the same initials
+  const colors = [
+    "bg-red-500",
+    "bg-green-500",
+    "bg-blue-500",
+    "bg-yellow-500",
+    "bg-purple-500",
+    "bg-pink-500",
+    "bg-indigo-500",
+    "bg-gray-500",
+  ];
 
-// };
+  return colors[charCode % colors.length];
+};
 
 export function UserProfile({
   displayName,
@@ -47,7 +47,7 @@ export function UserProfile({
     <div className="flex items-center gap-2">
       <div
         className={clsx(
-          "rounded-full relative overflow-hidden shrink-0 bg-blue-500 flex items-center justify-center text-white font-bold",
+          `rounded-full relative overflow-hidden shrink-0 flex items-center justify-center text-white font-bold ${getColorClass(displayName)}`,
           {
             "w-8 h-8": size === "sm",
             "w-10 h-10": size === "md",
