@@ -1,7 +1,5 @@
 "use client";
 
-// todo: scroll to error
-
 import clsx from "clsx";
 import slugify from "slugify";
 import {
@@ -21,6 +19,7 @@ import { submitBrand } from "./actions";
 import PhotoUpload from "@/app/components/PhotoUpload";
 import SimilarBrandsWarning from "./SimilarBrandsWarning";
 import dynamic from "next/dynamic";
+import { useScrollToError } from "@/app/hooks/useScrollToError";
 
 const DevTool = dynamic(
   () => import("@hookform/devtools").then((m) => m.DevTool),
@@ -36,8 +35,10 @@ export default function AddBrand() {
     handleSubmit,
     setError,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, submitCount },
   } = useForm<BrandFormInputs>({ resolver: zodResolver(brandFormSchema) });
+
+  const formRef = useScrollToError(errors, submitCount);
 
   const watchedName = useWatch({ control, name: "name", defaultValue: "" });
   const slugPreview = watchedName
@@ -72,7 +73,7 @@ export default function AddBrand() {
   return (
     <div className="w-full max-w-3xl min-w-80 mx-auto py-10 px-6">
       <h1 className="text-2xl font-semibold mb-6">Add a brand</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         {errors.root && (
           <div role="alert" className="alert alert-error">
             <svg
