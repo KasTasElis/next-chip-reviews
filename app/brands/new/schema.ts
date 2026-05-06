@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Used by the client form — slug is derived, not user input
 export const brandFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
@@ -8,14 +7,12 @@ export const brandFormSchema = z.object({
 
 export type BrandFormInputs = z.infer<typeof brandFormSchema>;
 
-const RESERVED_SLUGS = ["new"];
-
-// Used by the server action — includes slug and logo_url
-export const brandSchema = brandFormSchema.extend({
-  slug: z.string().min(1).refine((s) => !RESERVED_SLUGS.includes(s), {
-    message: "That name is reserved — please choose a different one",
-  }),
-  logo_url: z.string().min(1, "Logo is required"),
+export const submitBrandSchema = brandFormSchema.extend({
+  logo: z
+    .instanceof(File, { message: "Logo is required" })
+    .refine((f) => f.size > 0, "Logo is required")
+    .refine(
+      (f) => ["image/png", "image/jpeg", "image/webp"].includes(f.type),
+      "Logo must be a PNG, JPG, or WebP image",
+    ),
 });
-
-export type BrandInputs = z.infer<typeof brandSchema>;
