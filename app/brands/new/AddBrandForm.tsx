@@ -1,4 +1,3 @@
- 
 "use client";
 
 // todo: scroll to error
@@ -99,8 +98,6 @@ export default function AddBrand() {
         .from("brand-logos")
         .remove([path]);
 
-      console.log("Cleaning up logo: ", cleanupResult);
-
       if (cleanupResult.error) {
         console.error("Error cleaning up logo: ", cleanupResult.error);
       }
@@ -141,7 +138,6 @@ export default function AddBrand() {
               onChange: async (e) => {
                 if (e.target.value === "" || e.target.value.length < 2) {
                   setBrandSuggestions([]);
-                  console.log("no query");
                   return;
                 }
 
