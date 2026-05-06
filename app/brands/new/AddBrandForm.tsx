@@ -1,8 +1,17 @@
+ 
 "use client";
+
+// todo: scroll to error
 
 import clsx from "clsx";
 import slugify from "slugify";
-import { useForm, useWatch, SubmitHandler } from "react-hook-form";
+import {
+  useForm,
+  useWatch,
+  SubmitHandler,
+  FieldValues,
+  Control,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -12,15 +21,30 @@ import { routes } from "@/app/routes";
 import { createBrand } from "./actions";
 import { supabase } from "@/app/lib/supabase";
 import PhotoUpload from "@/app/components/PhotoUpload";
-import { DevTool } from "@hookform/devtools";
-import debounce from "debounce";
+import dynamic from "next/dynamic";
 
-const debouncedLog = debounce(() => console.log("boom"), 2000);
+const DevTool = dynamic(
+  () => import("@hookform/devtools").then((m) => m.DevTool),
+  { ssr: false },
+);
+
+import pDebounce from "p-debounce";
+
+import { SimilarBrand } from "@/supabase/types";
+import Link from "next/link";
+import Image from "next/image";
+
+const debouncedFindSimilarBrands = pDebounce((name: string) => {
+  return supabase.rpc("find_similar_brands", {
+    query: name,
+  });
+}, 1500);
 
 export default function AddBrand() {
   const router = useRouter();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [brandSuggestions, setBrandSuggestions] = useState<SimilarBrand[]>([]);
 
   const {
     register,
@@ -67,8 +91,20 @@ export default function AddBrand() {
       slug,
       logo_url: publicUrl,
     });
+
     if (result?.error) {
       setError("root", { message: result.error });
+
+      const cleanupResult = await supabase.storage
+        .from("brand-logos")
+        .remove([path]);
+
+      console.log("Cleaning up logo: ", cleanupResult);
+
+      if (cleanupResult.error) {
+        console.error("Error cleaning up logo: ", cleanupResult.error);
+      }
+
       return;
     }
     toast.success(`${name} added!`);
@@ -102,22 +138,71 @@ export default function AddBrand() {
           <legend className="fieldset-legend">Name*</legend>
           <input
             {...register("name", {
-              onChange: () => {
-                debouncedLog();
-                //console.log("nameee");
+              onChange: async (e) => {
+                if (e.target.value === "" || e.target.value.length < 2) {
+                  setBrandSuggestions([]);
+                  console.log("no query");
+                  return;
+                }
+
+                const response = await debouncedFindSimilarBrands(
+                  e.target.value,
+                );
+
+                setBrandSuggestions(response.data || []);
               },
             })}
             type="text"
             placeholder="Brand Name"
             className={clsx("input w-full", errors.name && "input-error")}
           />
+
+          {slugPreview ? (
+            <span className="text-base-content/50 text-xs">
+              slug preview: brands/{slugPreview}
+            </span>
+          ) : null}
+
           {errors.name ? (
             <p className="text-error text-xs mt-1">{errors.name.message}</p>
-          ) : slugPreview ? (
-            <p className="text-base-content/50 text-xs mt-1">
-              slug preview: brands/{slugPreview}
-            </p>
           ) : null}
+
+          {brandSuggestions.length > 0 && (
+            <>
+              <div className="divider" />
+              <div>
+                <p className="mb-3 text-sm text-base-content/70">
+                  ℹ️ We found similar existing brands. Please double check if
+                  are not creating a duplicate.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {brandSuggestions.map((brand, i) => {
+                    return (
+                      <Link
+                        key={i}
+                        className="flex gap-3 outline outline-1 outline-base-content/20 rounded p-3 hover:outline-base-content/50 cursor-pointer"
+                        href={`${routes.brands}/${brand.slug}`}
+                        target="_blank"
+                      >
+                        <div className="h-14 w-14 rounded-xl relative">
+                          <Image
+                            src={brand.logo_url}
+                            alt={brand.name}
+                            className="h-full w-full object-cover rounded-xl"
+                            fill
+                            sizes="56px"
+                          />
+                        </div>
+                        <p className="text-xs text-base-content/50">
+                          {brand.name}
+                        </p>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </fieldset>
 
         <fieldset className="fieldset">
@@ -154,7 +239,10 @@ export default function AddBrand() {
           )}
         </button>
       </form>
-      {process.env.NODE_ENV !== "production" && <DevTool control={control} />}
+
+      {process.env.NODE_ENV !== "production" && (
+        <DevTool control={control as unknown as Control<FieldValues>} />
+      )}
     </div>
   );
 }

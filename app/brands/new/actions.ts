@@ -21,7 +21,17 @@ export async function createBrand(data: BrandInputs) {
     logo_url: parsed.data.logo_url,
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("Error creating brand: ", error);
+
+    if (error.code === "23505") {
+      return { error: "A brand with this name already exists" };
+    }
+
+    return {
+      error: "Something went wrong, failed to create brand. Please try again.",
+    };
+  }
 
   return { slug: parsed.data.slug };
 }

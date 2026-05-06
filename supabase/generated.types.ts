@@ -252,6 +252,7 @@ export type Database = {
         Args: { query: string; threshold?: number }
         Returns: {
           id: string
+          logo_url: string
           name: string
           score: number
           slug: string
