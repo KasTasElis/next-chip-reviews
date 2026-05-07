@@ -12,6 +12,7 @@ import { ChipsEmptyState } from "./components/ChipsEmptyState";
 import { createSupabaseServerClient } from "./lib/supabase-server";
 import Link from "next/link";
 import { routes } from "@/app/routes";
+import { SearchModal } from "./components/SearchModal";
 
 export default async function Home() {
   const supabase = await createSupabaseServerClient();
@@ -46,6 +47,10 @@ export default async function Home() {
       </div> */}
 
       <div className="container mx-auto my-5 mb-7">
+        <div className="mb-5">
+          <SearchModal />
+        </div>
+
         <div className="flex justify-between mb-3 items-center">
           <h2 className="text-lg font-bold">⭐️ Top Rated 10</h2>
           <Link href={routes.chips} className="underline hover:opacity-80">
