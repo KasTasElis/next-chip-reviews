@@ -2,7 +2,13 @@
 
 import clsx from "clsx";
 import slugify from "slugify";
-import { useForm, useWatch, Controller } from "react-hook-form";
+import {
+  useForm,
+  useWatch,
+  Controller,
+  Control,
+  FieldValues,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -16,8 +22,13 @@ import { supabase } from "@/app/lib/supabase";
 import type { Brand } from "@/supabase/types";
 import PhotoUpload from "@/app/components/PhotoUpload";
 import Autocomplete from "@/app/components/Autocomplete";
-import { DevTool } from "@hookform/devtools";
 import { Route } from "next";
+import dynamic from "next/dynamic";
+
+const DevTool = dynamic(
+  () => import("@hookform/devtools").then((m) => m.DevTool),
+  { ssr: false },
+);
 
 export default function ChipForm({ brands }: { brands: Brand[] }) {
   const brandOptions = brands.map((b) => ({
@@ -206,7 +217,9 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
           )}
         </button>
       </form>
-      {process.env.NODE_ENV !== "production" && <DevTool control={control} />}
+      {process.env.NODE_ENV !== "production" && (
+        <DevTool control={control as unknown as Control<FieldValues>} />
+      )}
     </div>
   );
 }
