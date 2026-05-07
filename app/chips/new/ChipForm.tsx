@@ -5,6 +5,7 @@ import slugify from "slugify";
 import {
   useForm,
   useWatch,
+  SubmitHandler,
   Controller,
   Control,
   FieldValues,
@@ -18,12 +19,12 @@ import { chipFormSchema, type ChipFormInputs } from "./schema";
 import { routes } from "@/app/routes";
 import { createChip, findSimilarChips } from "./actions";
 import SimilarItemsWarning from "@/app/components/SimilarItemsWarning";
-import { supabase } from "@/app/lib/supabase";
 import type { Brand } from "@/supabase/types";
 import PhotoUpload from "@/app/components/PhotoUpload";
 import Autocomplete from "@/app/components/Autocomplete";
 import { Route } from "next";
 import dynamic from "next/dynamic";
+import { useScrollToError } from "@/app/hooks/useScrollToError";
 
 const DevTool = dynamic(
   () => import("@hookform/devtools").then((m) => m.DevTool),
@@ -37,15 +38,17 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
   }));
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoError, setPhotoError] = useState<string>();
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     setError,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, submitCount },
   } = useForm<ChipFormInputs>({ resolver: zodResolver(chipFormSchema) });
+
+  const formRef = useScrollToError(errors, submitCount);
 
   const [watchedName, watchedBrandId] = useWatch({
     control,
@@ -62,59 +65,36 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
     [watchedBrandId],
   );
 
-  const onSubmit = async ({ name, description, brand_id }: ChipFormInputs) => {
-    setPhotoError(undefined);
-
+  const onSubmit: SubmitHandler<ChipFormInputs> = async ({ name, description, brand_id }) => {
     if (!photoFile) {
       setPhotoError("Please add a photo.");
       return;
     }
 
-    const path = `${slug}.webp`;
+    const formData = new FormData();
+    formData.append("name", name);
+    if (description) formData.append("description", description);
+    formData.append("brand_id", brand_id);
+    formData.append("slug", slug);
+    formData.append("photo", photoFile);
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("chip-photos")
-      .upload(path, photoFile);
+    const result = await createChip(formData);
 
-    if (uploadError) {
-      setPhotoError(uploadError.message);
+    if (result?.error) {
+      setError("root", { message: result.error });
       return;
     }
 
-    const photo_url = supabase.storage
-      .from("chip-photos")
-      .getPublicUrl(uploadData.path).data.publicUrl;
-
-    const { error: createChipError, slug: createdChipSlug } = await createChip({
-      name,
-      description,
-      brand_id,
-      slug,
-      photo_url,
-    });
-
-    if (createChipError) {
-      setError("root", { message: createChipError });
-
-      // todo: clean up potentially stranded images
-      // console.log("path: ", uploadData.path, uploadData.fullPath);
-      // const { error: cleanUpErr, data: cleanUpData } = await supabase.storage
-      //   .from("chip-photos")
-      //   .remove([uploadData.fullPath]);
-
-      // console.log({ cleanUpErr, cleanUpData });
-      return;
-    }
     toast.success(`${name} added!`);
-    router.push(`${routes.chips}/${createdChipSlug}`);
+    router.push(`${routes.chips}/${result.slug}`);
   };
 
   return (
     <div className="w-full max-w-3xl min-w-80 mx-auto py-10 px-6">
       <h1 className="text-2xl font-semibold mb-6">Add a Chip</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-        {errors.root ? (
+      <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        {errors.root && (
           <div role="alert" className="alert alert-error">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +111,7 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
             </svg>
             <span>{errors.root.message}</span>
           </div>
-        ) : null}
+        )}
 
         <fieldset className="fieldset">
           <legend className="fieldset-legend">Brand Name*</legend>
@@ -198,17 +178,17 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
         <PhotoUpload
           label="Package Photo*"
           onChange={(file) => {
-            setPhotoError(undefined);
+            if (file) setPhotoError(null);
             setPhotoFile(file);
           }}
           aspect={4 / 3}
-          error={photoError}
+          error={photoError ?? undefined}
         />
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="btn btn-primary mt-2"
+          className={clsx("btn btn-primary mt-2", isSubmitting && "btn-disabled")}
         >
           {isSubmitting ? (
             <span className="loading loading-spinner" />
