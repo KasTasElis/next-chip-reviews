@@ -258,6 +258,16 @@ export type Database = {
           slug: string
         }[]
       }
+      find_similar_chips: {
+        Args: { brand_id: string; chip_slug: string; threshold?: number }
+        Returns: {
+          id: string
+          name: string
+          photo_url: string
+          score: number
+          slug: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

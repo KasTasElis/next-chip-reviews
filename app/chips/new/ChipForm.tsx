@@ -7,15 +7,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { chipFormSchema, type ChipFormInputs } from "./schema";
 import { routes } from "@/app/routes";
-import { createChip } from "./actions";
+import { createChip, findSimilarChips } from "./actions";
+import SimilarItemsWarning from "@/app/components/SimilarItemsWarning";
 import { supabase } from "@/app/lib/supabase";
 import type { Brand } from "@/supabase/types";
 import PhotoUpload from "@/app/components/PhotoUpload";
 import Autocomplete from "@/app/components/Autocomplete";
 import { DevTool } from "@hookform/devtools";
+import { Route } from "next";
 
 export default function ChipForm({ brands }: { brands: Brand[] }) {
   const brandOptions = brands.map((b) => ({
@@ -43,6 +45,11 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
   const prelimSlug = `${selectedBrand?.name ? `${selectedBrand.name} ` : ""}${watchedName ?? ""}`;
 
   const slug = slugify(prelimSlug, { lower: true, strict: true });
+
+  const fetchSimilarChips = useCallback(
+    (chipSlug: string) => findSimilarChips(chipSlug, watchedBrandId),
+    [watchedBrandId],
+  );
 
   const onSubmit = async ({ name, description, brand_id }: ChipFormInputs) => {
     setPhotoError(undefined);
@@ -157,6 +164,15 @@ export default function ChipForm({ brands }: { brands: Brand[] }) {
           {errors.name ? (
             <p className="text-error text-xs mt-1">{errors.name.message}</p>
           ) : null}
+
+          {watchedBrandId && (
+            <SimilarItemsWarning
+              slug={slug}
+              fetchFn={fetchSimilarChips}
+              message="ℹ️ We found similar existing chips. Please double check if you are not creating a duplicate."
+              hrefFn={(s) => `${routes.chips}/${s}` as Route}
+            />
+          )}
         </fieldset>
 
         <fieldset className="fieldset">

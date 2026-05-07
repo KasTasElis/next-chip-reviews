@@ -34,3 +34,5 @@ export type Review = Tables<"reviews">;
 export type Profile = Tables<"profiles">;
 export type SimilarBrand =
   Database["public"]["Functions"]["find_similar_brands"]["Returns"][number];
+export type SimilarChip =
+  Database["public"]["Functions"]["find_similar_chips"]["Returns"][number];

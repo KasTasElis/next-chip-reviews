@@ -15,11 +15,12 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { brandFormSchema, type BrandFormInputs } from "./schema";
 import { routes } from "@/app/routes";
-import { submitBrand } from "./actions";
+import { submitBrand, findSimilarBrands } from "./actions";
 import PhotoUpload from "@/app/components/PhotoUpload";
-import SimilarBrandsWarning from "./SimilarBrandsWarning";
+import SimilarItemsWarning from "@/app/components/SimilarItemsWarning";
 import dynamic from "next/dynamic";
 import { useScrollToError } from "@/app/hooks/useScrollToError";
+import { Route } from "next";
 
 const DevTool = dynamic(
   () => import("@hookform/devtools").then((m) => m.DevTool),
@@ -73,7 +74,11 @@ export default function AddBrand() {
   return (
     <div className="w-full max-w-3xl min-w-80 mx-auto py-10 px-6">
       <h1 className="text-2xl font-semibold mb-6">Add a brand</h1>
-      <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-5"
+      >
         {errors.root && (
           <div role="alert" className="alert alert-error">
             <svg
@@ -112,7 +117,12 @@ export default function AddBrand() {
             <p className="text-error text-xs mt-1">{errors.name.message}</p>
           ) : null}
 
-          <SimilarBrandsWarning name={watchedName} />
+          <SimilarItemsWarning
+            slug={slugPreview}
+            fetchFn={findSimilarBrands}
+            message="ℹ️ We found similar existing brands. Please double check if you are not creating a duplicate."
+            hrefFn={(slug) => `${routes.brands}/${slug}` as Route}
+          />
         </fieldset>
 
         <fieldset className="fieldset">

@@ -3,14 +3,18 @@
 import slugify from "slugify";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import { submitBrandSchema } from "./schema";
-import { SimilarBrand } from "@/supabase/types";
+import type { SimilarItem } from "@/app/components/SimilarItemsWarning";
 
 const RESERVED_SLUGS = ["new"];
 
-export async function findSimilarBrands(name: string): Promise<SimilarBrand[]> {
+export async function findSimilarBrands(slug: string): Promise<SimilarItem[]> {
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.rpc("find_similar_brands", { query: name });
-  return data ?? [];
+  const { data } = await supabase.rpc("find_similar_brands", { query: slug });
+  return (data ?? []).map((b) => ({
+    name: b.name,
+    imageUrl: b.logo_url,
+    slug: b.slug,
+  }));
 }
 
 export async function submitBrand(formData: FormData) {
