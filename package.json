@@ -12,7 +12,9 @@
     "test:watch": "vitest",
     "prepare": "husky",
     "supabase:generate:types": "supabase gen types typescript --linked > supabase/generated.types.ts",
-    "supabase:db:pull": "supabase db pull"
+    "supabase:db:pull": "supabase db pull",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
