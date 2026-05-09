@@ -65,6 +65,15 @@ async function seedUsersAndProfiles(): Promise<string[]> {
 }
 
 async function main() {
+  // Safety check to prevent seeding a production database
+  const url = new URL(process.env.DATABASE_URL!);
+  if (url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
+    console.error(
+      `Refusing to seed: DATABASE_URL points to ${url.hostname}, not localhost.`,
+    );
+    process.exit(1);
+  }
+
   const start = Date.now();
 
   await cleanup();
