@@ -14,7 +14,8 @@
     "supabase:generate:types": "supabase gen types typescript --linked > supabase/generated.types.ts",
     "supabase:db:pull": "supabase db pull",
     "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop"
+    "supabase:stop": "supabase stop",
+    "supabase:seed": "tsx --env-file=.env.local supabase/seed/seed.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -29,6 +30,7 @@
     "clsx": "^2.1.1",
     "next": "16.2.2",
     "p-debounce": "^5.1.0",
+    "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-easy-crop": "^5.5.7",
@@ -38,19 +40,23 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
     "@hookform/devtools": "^4.4.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vercel/config": "^0.1.0",
     "daisyui": "^5.5.19",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "supabase": "^2.89.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "type-fest": "^5.5.0",
     "typescript": "^5",
     "vitest": "^4.1.4"
