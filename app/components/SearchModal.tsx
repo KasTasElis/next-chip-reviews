@@ -30,8 +30,8 @@ const ModalContent = () => {
         />
       </label>
 
-      <div className="p-3 bg-base-100 rounded-box my-3 flex items-center gap-3">
-        <span className="loading loading-ring loading-sm"></span>
+      <div className="p-3 bg-base-100 my-3 flex items-center gap-3">
+        {/* <span className="loading loading-ring loading-sm"></span> */}
         <span className="opacity-50">
           Searching<span className="skeleton skeleton-text">...</span>
         </span>
