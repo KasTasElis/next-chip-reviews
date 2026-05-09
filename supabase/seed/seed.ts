@@ -9,7 +9,8 @@ const pool = new Pool({
 
 const USERS_COUNT = 10_000;
 const BRANDS_COUNT = 200;
-const CHIPS_COUNT = 2_000;
+const CHIPS_COUNT = 10_000;
+const REVIEWS_COUNT = 350_000;
 const BATCH_SIZE = 500;
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -116,7 +117,10 @@ async function seedBrands(userIds: string[]): Promise<string[]> {
   }
 }
 
-async function seedChips(brandIds: string[], userIds: string[]) {
+async function seedChips(
+  brandIds: string[],
+  userIds: string[],
+): Promise<string[]> {
   console.log(`Seeding ${CHIPS_COUNT} chips...`);
 
   const chips = Array.from({ length: CHIPS_COUNT }, (_, i) => {
@@ -136,12 +140,14 @@ async function seedChips(brandIds: string[], userIds: string[]) {
 
   const batches = chunk(chips, BATCH_SIZE);
   let inserted = 0;
+  const chipIds: string[] = [];
 
   try {
     for (const batch of batches) {
-      await pool.query(
+      const result = await pool.query(
         `INSERT INTO public.chips (id, name, slug, description, photo_url, brand_id, user_id, created_at)
-         SELECT gen_random_uuid(), unnest($1::text[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[]), unnest($5::uuid[]), unnest($6::uuid[]), now()`,
+         SELECT gen_random_uuid() AS id, unnest($1::text[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[]), unnest($5::uuid[]), unnest($6::uuid[]), now()
+         RETURNING id`,
         [
           batch.map((c) => c.name),
           batch.map((c) => c.slug),
@@ -151,12 +157,70 @@ async function seedChips(brandIds: string[], userIds: string[]) {
           batch.map((c) => c.userId),
         ],
       );
+      chipIds.push(...result.rows.map((row) => row.id));
       inserted += batch.length;
       process.stdout.write(`\rInserted ${inserted}/${CHIPS_COUNT} chips`);
     }
     process.stdout.write("\n");
+    return chipIds;
   } catch (error) {
     console.error("Error inserting chips:", error);
+    throw error;
+  }
+}
+
+async function seedReviews(chipIds: string[], userIds: string[]) {
+  console.log(`Seeding ${REVIEWS_COUNT} reviews...`);
+
+  // Build unique (chip_id, user_id) pairs — the table has a unique constraint on both
+  const used = new Set<string>();
+  const reviews: {
+    chipId: string;
+    userId: string;
+    review: string;
+    photoUrl: string | null;
+    rating: number;
+  }[] = [];
+
+  while (reviews.length < REVIEWS_COUNT) {
+    const chipId = chipIds[Math.floor(Math.random() * chipIds.length)];
+    const userId = userIds[Math.floor(Math.random() * userIds.length)];
+    const key = `${chipId}:${userId}`;
+    if (used.has(key)) continue;
+    used.add(key);
+    reviews.push({
+      chipId,
+      userId,
+      review: faker.lorem.sentences({ min: 1, max: 4 }),
+      photoUrl:
+        faker.helpers.maybe(() => faker.image.url(), { probability: 0.3 }) ??
+        null,
+      rating: faker.number.int({ min: 1, max: 5 }),
+    });
+  }
+
+  const batches = chunk(reviews, BATCH_SIZE);
+  let inserted = 0;
+
+  try {
+    for (const batch of batches) {
+      await pool.query(
+        `INSERT INTO public.reviews (id, chip_id, user_id, review, photo_url, rating, created_at)
+         SELECT gen_random_uuid(), unnest($1::uuid[]), unnest($2::uuid[]), unnest($3::text[]), unnest($4::text[]), unnest($5::smallint[]), now()`,
+        [
+          batch.map((r) => r.chipId),
+          batch.map((r) => r.userId),
+          batch.map((r) => r.review),
+          batch.map((r) => r.photoUrl),
+          batch.map((r) => r.rating),
+        ],
+      );
+      inserted += batch.length;
+      process.stdout.write(`\rInserted ${inserted}/${REVIEWS_COUNT} reviews`);
+    }
+    process.stdout.write("\n");
+  } catch (error) {
+    console.error("Error inserting reviews:", error);
     throw error;
   }
 }
@@ -176,7 +240,8 @@ async function main() {
   await cleanup();
   const userIds = await seedUsersAndProfiles();
   const brandIds = await seedBrands(userIds);
-  await seedChips(brandIds, userIds);
+  const chipIds = await seedChips(brandIds, userIds);
+  await seedReviews(chipIds, userIds);
   console.log("Done. Total users:", userIds.length);
 
   const elapsed = ((Date.now() - start) / 1000).toFixed(1);
