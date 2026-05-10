@@ -98,7 +98,7 @@ async function seedBrands(userIds: string[]): Promise<string[]> {
         faker.helpers.maybe(() => faker.company.catchPhrase(), {
           probability: 0.7,
         }) ?? null,
-      logo_url: faker.image.url(),
+      logo_url: '/brand-placeholder.jpg',
       user_id: randomFrom(userIds),
     };
   });
@@ -135,7 +135,7 @@ async function seedChips(
         faker.helpers.maybe(() => faker.commerce.productDescription(), {
           probability: 0.7,
         }) ?? null,
-      photo_url: faker.image.url(),
+      photo_url: '/chip-placeholder.jpg',
       brand_id: randomFrom(brandIds),
       user_id: randomFrom(userIds),
     };
@@ -180,7 +180,7 @@ async function seedReviews(
       user_id,
       review: faker.lorem.sentences({ min: 1, max: 4 }),
       photo_url:
-        faker.helpers.maybe(() => faker.image.url(), { probability: 0.3 }) ??
+        faker.helpers.maybe(() => '/chip-placeholder.jpg', { probability: 0.3 }) ??
         null,
       rating: faker.number.int({ min: 1, max: 5 }),
     });
