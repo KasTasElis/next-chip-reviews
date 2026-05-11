@@ -78,9 +78,9 @@ async function seedUsersAndProfiles(): Promise<string[]> {
     const result = await pool.query(
       `INSERT INTO auth.users
          (id, aud, role, email, encrypted_password, raw_user_meta_data, email_confirmed_at, created_at, updated_at)
-       SELECT gen_random_uuid(), 'authenticated', 'authenticated', unnest($1::text[]), $2, unnest($3::text[])::jsonb, now(), now(), now()
+       SELECT gen_random_uuid(), 'authenticated', 'authenticated', unnest($1::text[]), $2, unnest($3::text[])::jsonb, unnest($4::timestamptz[]), unnest($4::timestamptz[]), unnest($4::timestamptz[])
        RETURNING id`,
-      [batch.map((u) => u.email), hash, batch.map((u) => u.metaData)],
+      [batch.map((u) => u.email), hash, batch.map((u) => u.metaData), batch.map(() => faker.date.past({ years: 2 }).toISOString())],
     );
     return result.rows.map((row) => row.id as string);
   });
@@ -100,13 +100,14 @@ async function seedBrands(userIds: string[]): Promise<string[]> {
         }) ?? null,
       logo_url: '/brand-placeholder.jpg',
       user_id: randomFrom(userIds),
+      created_at: faker.date.past({ years: 2 }).toISOString(),
     };
   });
 
   return runBatches("brands", BRANDS_COUNT, brands, async (batch) => {
     const result = await pool.query(
       `INSERT INTO public.brands (id, name, slug, logo_url, description, user_id, created_at)
-       SELECT gen_random_uuid() AS id, unnest($1::text[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[]), unnest($5::uuid[]), now()
+       SELECT gen_random_uuid() AS id, unnest($1::text[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[]), unnest($5::uuid[]), unnest($6::timestamptz[])
        RETURNING id`,
       [
         batch.map((b) => b.name),
@@ -114,6 +115,7 @@ async function seedBrands(userIds: string[]): Promise<string[]> {
         batch.map((b) => b.logo_url),
         batch.map((b) => b.description),
         batch.map((b) => b.user_id),
+        batch.map((b) => b.created_at),
       ],
     );
     return result.rows.map((row) => row.id as string);
@@ -138,13 +140,14 @@ async function seedChips(
       photo_url: '/chip-placeholder.jpg',
       brand_id: randomFrom(brandIds),
       user_id: randomFrom(userIds),
+      created_at: faker.date.past({ years: 2 }).toISOString(),
     };
   });
 
   return runBatches("chips", CHIPS_COUNT, chips, async (batch) => {
     const result = await pool.query(
       `INSERT INTO public.chips (id, name, slug, description, photo_url, brand_id, user_id, created_at)
-       SELECT gen_random_uuid() AS id, unnest($1::text[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[]), unnest($5::uuid[]), unnest($6::uuid[]), now()
+       SELECT gen_random_uuid() AS id, unnest($1::text[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[]), unnest($5::uuid[]), unnest($6::uuid[]), unnest($7::timestamptz[])
        RETURNING id`,
       [
         batch.map((c) => c.name),
@@ -153,6 +156,7 @@ async function seedChips(
         batch.map((c) => c.photo_url),
         batch.map((c) => c.brand_id),
         batch.map((c) => c.user_id),
+        batch.map((c) => c.created_at),
       ],
     );
     return result.rows.map((row) => row.id as string);
@@ -183,6 +187,7 @@ async function seedReviews(
         faker.helpers.maybe(() => '/chip-placeholder.jpg', { probability: 0.3 }) ??
         null,
       rating: faker.number.int({ min: 1, max: 5 }),
+      created_at: faker.date.past({ years: 2 }).toISOString(),
     });
   }
 
@@ -193,13 +198,14 @@ async function seedReviews(
     async (batch) => {
       await pool.query(
         `INSERT INTO public.reviews (id, chip_id, user_id, review, photo_url, rating, created_at)
-       SELECT gen_random_uuid(), unnest($1::uuid[]), unnest($2::uuid[]), unnest($3::text[]), unnest($4::text[]), unnest($5::smallint[]), now()`,
+       SELECT gen_random_uuid(), unnest($1::uuid[]), unnest($2::uuid[]), unnest($3::text[]), unnest($4::text[]), unnest($5::smallint[]), unnest($6::timestamptz[])`,
         [
           batch.map((r) => r.chip_id),
           batch.map((r) => r.user_id),
           batch.map((r) => r.review),
           batch.map((r) => r.photo_url),
           batch.map((r) => r.rating),
+          batch.map((r) => r.created_at),
         ],
       );
       return [];
