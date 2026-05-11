@@ -3,12 +3,25 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
+import { REVIEWS_PAGE_SIZE } from "./constants";
+import { reviewsQueryBuilder, type ReviewWithProfile } from "./queries";
 
 const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   review: z.string().min(1),
   photo_url: z.string().url().optional(),
 });
+
+export async function fetchReviews(
+  chipId: string,
+  offset: number = 0,
+): Promise<ReviewWithProfile[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await reviewsQueryBuilder(supabase, chipId)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + REVIEWS_PAGE_SIZE - 1);
+  return data ?? [];
+}
 
 export async function submitReview(chipId: string, data: unknown) {
   const parsed = reviewSchema.safeParse(data);

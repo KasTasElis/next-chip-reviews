@@ -10,6 +10,7 @@ import StarRating from "@/app/components/StarRating";
 import Image from "next/image";
 import { Timestamps } from "@/app/components/Timestamps";
 import { reviewsQueryBuilder } from "./queries";
+import { REVIEWS_PAGE_SIZE } from "./constants";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -53,7 +54,10 @@ export default async function ChipsSingle({ params }: Props) {
 
   if (!chip) notFound();
 
-  const { data: reviews } = await reviewsQueryBuilder(supabase, chip.id);
+  const { data: reviews } = await reviewsQueryBuilder(supabase, chip.id).range(
+    0,
+    REVIEWS_PAGE_SIZE - 1,
+  );
 
   const brand = Array.isArray(chip.brands) ? chip.brands[0] : chip.brands;
 
@@ -124,7 +128,7 @@ export default async function ChipsSingle({ params }: Props) {
       {/* Reviews section */}
       <div>
         <h2 className="text-lg font-bold mb-4">Reviews</h2>
-        <ReviewList reviews={reviews ?? []} userId={user?.id ?? null} />
+        <ReviewList initialReviews={reviews ?? []} userId={user?.id ?? null} chipId={chip.id} />
       </div>
     </div>
   );

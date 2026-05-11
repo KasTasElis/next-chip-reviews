@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useInView } from "react-intersection-observer";
 import { ChipCard } from "../components/ChipCard";
 import { routes } from "@/app/routes";
 import { ChipsWithStats } from "@/supabase/types";
 import { PAGE_SIZE } from "./constants";
 import { fetchChips } from "./actions";
+import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
 
 function ChipCardSkeleton() {
   return (
@@ -28,25 +27,11 @@ export function ChipsList({
 }: {
   initialChips: ChipsWithStats[];
 }) {
-  const [chips, setChips] = useState<ChipsWithStats[]>(initialChips);
-  const [offset, setOffset] = useState(initialChips.length);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(initialChips.length >= PAGE_SIZE);
-  //const [isPending, startTransition] = useTransition();
-
-  const { ref: sentinelRef } = useInView({
-    threshold: 1,
+  const { items: chips, isLoading, hasMore, sentinelRef } = useInfiniteScroll({
+    initialItems: initialChips,
+    pageSize: PAGE_SIZE,
+    fetchFn: fetchChips,
     rootMargin: "400px",
-    onChange: async (inView) => {
-      if (hasMore && inView && !isLoading) {
-        setIsLoading(true);
-        const newChips = await fetchChips(offset);
-        if (newChips.length < PAGE_SIZE) setHasMore(false);
-        setChips((prev) => [...prev, ...newChips]);
-        setOffset((prev) => newChips.length + prev);
-        setIsLoading(false);
-      }
-    },
   });
 
   return (
