@@ -5,8 +5,9 @@ import { ChipCard } from "../components/ChipCard";
 import { routes } from "@/app/routes";
 import { ChipsWithStats } from "@/supabase/types";
 import { PAGE_SIZE } from "./constants";
-import { fetchChips } from "./actions";
+import { fetchChips, SortableChipColumn } from "./actions";
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
+import { useCallback } from "react";
 
 function ChipCardSkeleton() {
   return (
@@ -24,13 +25,30 @@ function ChipCardSkeleton() {
 
 export function ChipsList({
   initialChips,
+  sortBy,
+  sortOrder,
+  minRating,
 }: {
   initialChips: ChipsWithStats[];
+  sortBy?: SortableChipColumn;
+  sortOrder?: "asc" | "desc";
+  minRating?: number;
 }) {
-  const { items: chips, isLoading, hasMore, sentinelRef } = useInfiniteScroll({
+  const fetchFn = useCallback(
+    (offset: number) => fetchChips({ offset, sortBy, sortOrder, minRating }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const {
+    items: chips,
+    isLoading,
+    hasMore,
+    sentinelRef,
+  } = useInfiniteScroll({
     initialItems: initialChips,
     pageSize: PAGE_SIZE,
-    fetchFn: fetchChips,
+    fetchFn,
     rootMargin: "400px",
   });
 
