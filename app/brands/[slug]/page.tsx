@@ -48,7 +48,7 @@ export default async function BrandSingle({ params }: Props) {
   const supabase = await createSupabaseServerClient();
   const { data: chips } = await supabase
     .from("chips_with_stats")
-    .select("id, name, slug, photo_url, average_rating, review_count")
+    .select("*")
     .eq("brand_id", brand.id)
     .order("average_rating", { ascending: false });
   const fallbackImg =
@@ -88,19 +88,13 @@ export default async function BrandSingle({ params }: Props) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {chips && chips.length > 0 ? (
-            chips.map((chip, i) => (
+            chips.map((chip) => (
               <Link
                 key={chip.id}
                 href={`${routes.chips}/${chip.slug}`}
                 className="hover:opacity-80 transition"
               >
-                <ChipCard
-                  name={chip.name}
-                  photo_url={chip.photo_url}
-                  rating={chip.average_rating}
-                  reviewCount={chip.review_count}
-                  priority={i === 0}
-                />
+                <ChipCard chip={chip} />
               </Link>
             ))
           ) : (

@@ -1,4 +1,8 @@
-import type { Database as DatabaseGenerated, Tables, TablesInsert } from "./generated.types";
+import type {
+  Database as DatabaseGenerated,
+  Tables,
+  TablesInsert,
+} from "./generated.types";
 import { MergeDeep } from "type-fest";
 
 // generated null types is a known PostgreSQL issue, this is the recommended way to deal with it, taken from Supabase docs.
@@ -32,6 +36,8 @@ export type Chip = Tables<"chips">;
 export type Brand = Tables<"brands">;
 export type Review = Tables<"reviews">;
 export type Profile = Tables<"profiles">;
+export type ChipsWithStats =
+  Database["public"]["Views"]["chips_with_stats"]["Row"];
 
 export type BrandInsert = TablesInsert<"brands">;
 export type ChipInsert = TablesInsert<"chips">;

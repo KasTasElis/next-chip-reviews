@@ -60,19 +60,13 @@ export default async function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {chips && chips.length > 0 ? (
-            chips.map((chip, i) => (
+            chips.map((chip) => (
               <Link
                 href={`${routes.chips}/${chip.slug}`}
                 key={chip.id}
                 className="hover:opacity-80 transition"
               >
-                <ChipCard
-                  name={chip.name}
-                  photo_url={chip.photo_url}
-                  rating={chip.average_rating}
-                  reviewCount={chip.review_count}
-                  priority={i === 0}
-                />
+                <ChipCard chip={chip} />
               </Link>
             ))
           ) : (

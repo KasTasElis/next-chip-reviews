@@ -1,25 +1,17 @@
 import Image from "next/image";
 import StarRating from "./StarRating";
+import { ChipsWithStats } from "@/supabase/types";
 
 const PLACEHOLDER_IMG =
   "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
 
 export const ChipCard = ({
-  name,
-  photo_url,
-  rating,
-  reviewCount,
-  priority,
+  chip: { name, photo_url, average_rating, review_count },
 }: {
-  name: string;
-  photo_url?: string | null;
-  description?: string | null;
-  rating?: number;
-  reviewCount?: number;
-  priority?: boolean;
+  chip: ChipsWithStats;
 }) => {
   return (
-    <div className="card bg-base-100 shadow-sm">
+    <div className="card bg-base-100 shadow-sm h-full">
       <figure className="relative h-48">
         <Image
           src={photo_url ?? PLACEHOLDER_IMG}
@@ -27,11 +19,10 @@ export const ChipCard = ({
           fill
           className="object-cover"
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          priority={priority}
         />
       </figure>
       <div className="card-body">
-        <StarRating rating={rating} count={reviewCount} />
+        <StarRating rating={average_rating} count={review_count} />
         <div>
           <h2 className="card-title text-sm">{name}</h2>
         </div>
