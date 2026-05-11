@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
-import { BrandCard } from "../components/BrandCard";
+import { BrandsEmptyState } from "../components/BrandsEmptyState";
+import { createSupabaseServerClient } from "../lib/supabase-server";
+import Link from "next/link";
+import { routes } from "@/app/routes";
+import { BrandsList } from "./BrandsList";
+import { BRANDS_PAGE_SIZE } from "./constants";
 
 export const metadata: Metadata = {
   title: "All Brands",
   description: "Explore all chip brands reviewed by the community.",
 };
-import { BrandsEmptyState } from "../components/BrandsEmptyState";
-import { createSupabaseServerClient } from "../lib/supabase-server";
-import Link from "next/link";
-import { routes } from "@/app/routes";
 
 export default async function BrandsPage() {
   const supabase = await createSupabaseServerClient();
   const { data: brands } = await supabase
     .from("brands")
-    .select("id, name, description, slug, logo_url")
-    .order("created_at", { ascending: false });
+    .select("*")
+    .order("created_at", { ascending: false })
+    .range(0, BRANDS_PAGE_SIZE - 1);
 
   return (
     <div className="container mx-auto my-5">
@@ -25,25 +27,11 @@ export default async function BrandsPage() {
           Add Brand
         </Link>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {brands && brands.length > 0 ? (
-          brands.map((brand) => (
-            <Link
-              href={`${routes.brands}/${brand.slug}`}
-              key={brand.id}
-              className="hover:opacity-80 transition"
-            >
-              <BrandCard
-                name={brand.name}
-                description={brand.description}
-                logo_url={brand.logo_url}
-              />
-            </Link>
-          ))
-        ) : (
-          <BrandsEmptyState />
-        )}
-      </div>
+      {brands && brands.length > 0 ? (
+        <BrandsList initialBrands={brands} />
+      ) : (
+        <BrandsEmptyState />
+      )}
     </div>
   );
 }
