@@ -1,13 +1,11 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import type { Metadata } from "next";
-import { ChipCard } from "@/app/components/ChipCard";
-import { ChipsEmptyState } from "@/app/components/ChipsEmptyState";
 import { Timestamps } from "@/app/components/Timestamps";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
-import { routes } from "@/app/routes";
+import { PAGE_SIZE } from "@/app/chips/constants";
+import { BrandChipsList } from "./BrandChipsList";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -50,7 +48,8 @@ export default async function BrandSingle({ params }: Props) {
     .from("chips_with_stats")
     .select("*")
     .eq("brand_id", brand.id)
-    .order("average_rating", { ascending: false });
+    .order("average_rating", { ascending: false })
+    .range(0, PAGE_SIZE - 1);
   const fallbackImg =
     "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
 
@@ -82,25 +81,8 @@ export default async function BrandSingle({ params }: Props) {
 
       {/* Chips section */}
       <div>
-        <h2 className="text-lg font-bold mb-4">
-          Chips by {brand.name} ({chips?.length ?? 0})
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {chips && chips.length > 0 ? (
-            chips.map((chip) => (
-              <Link
-                key={chip.id}
-                href={`${routes.chips}/${chip.slug}`}
-                className="hover:opacity-80 transition"
-              >
-                <ChipCard chip={chip} />
-              </Link>
-            ))
-          ) : (
-            <ChipsEmptyState />
-          )}
-        </div>
+        <h2 className="text-lg font-bold mb-4">Chips by {brand.name}</h2>
+        <BrandChipsList initialChips={chips ?? []} brandId={brand.id} />
       </div>
     </div>
   );
