@@ -17,7 +17,8 @@ export function reviewsQueryBuilder(
       "id, rating, review, photo_url, created_at, updated_at, user_id, likes_count, profiles!reviews_user_id_fkey(username, avatar_url), review_likes(user_id)",
     )
     .eq("chip_id", chipId)
-    .order(sortBy, { ascending: sortOrder === "asc" });
+    .order(sortBy, { ascending: sortOrder === "asc" })
+    .order("id", { ascending: true }); // Ensure consistent ordering for pagination
 }
 
 export type ReviewsWithProfiles = QueryData<
