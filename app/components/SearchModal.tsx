@@ -8,6 +8,7 @@ import { fetchChips } from "@/app/chips/actions";
 import { fetchBrands } from "@/app/brands/actions";
 import type { ChipsWithStats, Brand } from "@/supabase/types";
 import { routes } from "@/app/routes";
+import { Search } from "lucide-react";
 
 const PREVIEW_LIMIT = 3;
 const modalId = "search-modal";
@@ -15,24 +16,7 @@ const modalId = "search-modal";
 const closeModal = () =>
   (document.getElementById(modalId) as HTMLDialogElement)?.close();
 
-const SearchIcon = () => (
-  <svg
-    className="h-[1em] opacity-50"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-  >
-    <g
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      strokeWidth="2.5"
-      fill="none"
-      stroke="currentColor"
-    >
-      <circle cx="11" cy="11" r="8"></circle>
-      <path d="m21 21-4.3-4.3"></path>
-    </g>
-  </svg>
-);
+const SearchIcon = () => <Search className="h-[1em] opacity-50" />;
 
 const ModalContent = () => {
   const [query, setQuery] = useState("");

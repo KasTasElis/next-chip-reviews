@@ -5,6 +5,7 @@ import Cropper from "react-easy-crop";
 import type { Area } from "react-easy-crop";
 import imageCompression from "browser-image-compression";
 import clsx from "clsx";
+import { Upload } from "lucide-react";
 
 interface PhotoUploadProps {
   label?: string;
@@ -16,24 +17,6 @@ interface PhotoUploadProps {
   aspect?: number;
 }
 
-function UploadIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-8 w-8"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-      />
-    </svg>
-  );
-}
 
 async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<File> {
   const image = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -185,7 +168,7 @@ export default function PhotoUpload({
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 text-base-content/50">
-              <UploadIcon />
+              <Upload className="h-8 w-8" strokeWidth={1.5} />
               <span className="text-md">
                 Drop photo here or <span className="text-primary">browse</span>
               </span>
