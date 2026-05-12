@@ -7,6 +7,7 @@ import type { Brand } from "@/supabase/types";
 import { BRANDS_PAGE_SIZE } from "./constants";
 import { fetchBrands } from "./actions";
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
+import { useCallback } from "react";
 
 function BrandCardSkeleton() {
   return (
@@ -21,11 +22,23 @@ function BrandCardSkeleton() {
   );
 }
 
-export function BrandsList({ initialBrands }: { initialBrands: Brand[] }) {
+export function BrandsList({
+  initialBrands,
+  search,
+}: {
+  initialBrands: Brand[];
+  search?: string;
+}) {
+  const fetchFn = useCallback(
+    (offset: number) => fetchBrands({ offset, search }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   const { items: brands, isLoading, hasMore, sentinelRef } = useInfiniteScroll({
     initialItems: initialBrands,
     pageSize: BRANDS_PAGE_SIZE,
-    fetchFn: fetchBrands,
+    fetchFn,
     rootMargin: "400px",
   });
 

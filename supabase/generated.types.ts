@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.4"
-  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -48,7 +43,7 @@ export type Database = {
           name: string
           slug: string
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -58,7 +53,7 @@ export type Database = {
           name: string
           slug: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -68,7 +63,7 @@ export type Database = {
           name?: string
           slug?: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -268,30 +263,89 @@ export type Database = {
           slug: string
         }[]
       }
-      search_chips: {
+      search_brands: {
         Args: {
-          query: string
-          min_rating?: number
           page_limit?: number
           page_offset?: number
+          query: string
           threshold?: number
-          sort_by?: string
-          sort_order?: string
         }
         Returns: {
-          average_rating: number | null
-          brand_id: string | null
-          created_at: string | null
+          created_at: string
           description: string | null
-          id: string | null
-          name: string | null
-          photo_url: string | null
-          review_count: number | null
-          slug: string | null
+          id: string
+          logo_url: string
+          name: string
+          slug: string
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "brands"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
+      search_chips:
+        | {
+            Args: {
+              min_rating?: number
+              page_limit?: number
+              page_offset?: number
+              query: string
+              threshold?: number
+            }
+            Returns: {
+              average_rating: number | null
+              brand_id: string | null
+              created_at: string | null
+              description: string | null
+              id: string | null
+              name: string | null
+              photo_url: string | null
+              review_count: number | null
+              slug: string | null
+              updated_at: string | null
+              user_id: string | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "chips_with_stats"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
+        | {
+            Args: {
+              min_rating?: number
+              page_limit?: number
+              page_offset?: number
+              query: string
+              sort_by?: string
+              sort_order?: string
+              threshold?: number
+            }
+            Returns: {
+              average_rating: number | null
+              brand_id: string | null
+              created_at: string | null
+              description: string | null
+              id: string | null
+              name: string | null
+              photo_url: string | null
+              review_count: number | null
+              slug: string | null
+              updated_at: string | null
+              user_id: string | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "chips_with_stats"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
     }
     Enums: {
       [_ in never]: never
@@ -427,3 +481,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+

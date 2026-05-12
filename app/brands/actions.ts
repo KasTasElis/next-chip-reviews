@@ -3,9 +3,30 @@
 import { createSupabaseServerClient } from "../lib/supabase-server";
 import { BRANDS_PAGE_SIZE } from "./constants";
 import type { Brand } from "@/supabase/types";
+import slugify from "slugify";
 
-export async function fetchBrands(offset: number = 0): Promise<Brand[]> {
+export type FetchBrandsOptions = {
+  offset?: number;
+  search?: string;
+};
+
+export async function fetchBrands({
+  offset = 0,
+  search,
+}: FetchBrandsOptions = {}): Promise<Brand[]> {
   const supabase = await createSupabaseServerClient();
+
+  if (search) {
+    const slugifiedQuery = slugify(search, { lower: true, strict: true });
+    if (!slugifiedQuery) return [];
+    const { data } = await supabase.rpc("search_brands", {
+      query: slugifiedQuery,
+      page_limit: BRANDS_PAGE_SIZE,
+      page_offset: offset,
+    });
+    return data ?? [];
+  }
+
   const { data } = await supabase
     .from("brands")
     .select("*")
