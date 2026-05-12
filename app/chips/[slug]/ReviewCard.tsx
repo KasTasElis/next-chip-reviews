@@ -163,13 +163,13 @@ export default function ReviewCard({
             disabled={!userId || isLiking}
             title={!userId ? "Sign in to like" : undefined}
             className={clsx(
-              "btn btn-ghost btn-lg gap-1",
+              "btn btn-ghost btn-lg gap-2",
               hasLiked && "text-error",
             )}
             aria-label={hasLiked ? "Unlike review" : "Like review"}
           >
             <Heart
-              className="h-4 w-4"
+              className="h-8 w-8"
               fill={hasLiked ? "currentColor" : "none"}
             />
             {likeCount > 0 && <span className="text-md">{likeCount}</span>}

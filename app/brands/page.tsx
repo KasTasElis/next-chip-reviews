@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { z } from "zod";
 import { BrandsEmptyState } from "../components/BrandsEmptyState";
-import Link from "next/link";
-import { routes } from "@/app/routes";
 import { BrandsList } from "./BrandsList";
 import { BrandsSearch } from "./BrandsSearch";
 import { fetchBrands, type FetchBrandsOptions } from "./actions";
@@ -34,9 +32,6 @@ export default async function BrandsPage({
     <div className="container mx-auto my-5 px-4">
       <div className="flex justify-between mb-3 items-center">
         <h2 className="text-lg font-bold">All Brands</h2>
-        <Link className="underline hover:opacity-80" href={routes.brandsNew}>
-          Add Brand
-        </Link>
       </div>
       <BrandsSearch search={search} />
       {brands.length > 0 ? (
