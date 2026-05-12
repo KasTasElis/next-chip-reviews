@@ -28,14 +28,17 @@ export function ChipsList({
   sortBy,
   sortOrder,
   minRating,
+  search,
 }: {
   initialChips: ChipsWithStats[];
   sortBy?: SortableChipColumn;
   sortOrder?: "asc" | "desc";
   minRating?: number;
+  search?: string;
 }) {
   const fetchFn = useCallback(
-    (offset: number) => fetchChips({ offset, sortBy, sortOrder, minRating }),
+    (offset: number) =>
+      fetchChips({ offset, sortBy, sortOrder, minRating, search }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );

@@ -1,9 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import type { Route } from "next";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { SortableChipColumn } from "./actions";
+
+const filterSchema = z.object({
+  search: z.string().refine((v) => v.length === 0 || v.length >= 3, {
+    message: "Search must be at least 3 characters",
+  }),
+  sortBy: z.enum(["average_rating", "review_count", ""]),
+  sortOrder: z.enum(["asc", "desc"]),
+  minRating: z.number().min(0).max(5),
+});
+
+type FilterValues = z.infer<typeof filterSchema>;
 
 const SORT_OPTIONS: { label: string; value: SortableChipColumn | "" }[] = [
   { label: "Default", value: "" },
@@ -15,49 +29,73 @@ export function ChipsFilterSort({
   sortBy,
   sortOrder,
   minRating,
+  search,
 }: {
   sortBy: SortableChipColumn | undefined;
   sortOrder: "asc" | "desc";
   minRating: number;
+  search: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
-  const [localSortBy, setLocalSortBy] = useState(sortBy ?? "");
-  const [localSortOrder, setLocalSortOrder] = useState(sortOrder);
-  const [localMinRating, setLocalMinRating] = useState(minRating);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<FilterValues>({
+    resolver: zodResolver(filterSchema),
+    defaultValues: { search, sortBy: sortBy ?? "", sortOrder, minRating },
+  });
 
   useEffect(() => {
-    setLocalSortBy(sortBy ?? "");
-  }, [sortBy]);
-  useEffect(() => {
-    setLocalSortOrder(sortOrder);
-  }, [sortOrder]);
-  useEffect(() => {
-    setLocalMinRating(minRating);
-  }, [minRating]);
+    reset({ search, sortBy: sortBy ?? "", sortOrder, minRating });
+  }, [search, sortBy, sortOrder, minRating, reset]);
 
-  function update(updates: Record<string, string>) {
-    const merged = { ...Object.fromEntries(searchParams), ...updates };
-    const params = new URLSearchParams(
-      Object.fromEntries(Object.entries(merged).filter(([, v]) => v !== ""))
-    );
-    router.replace(`${pathname}?${params.toString()}` as Route, { scroll: false });
+  const watchedSortBy = useWatch({ control, name: "sortBy" });
+  const watchedMinRating = useWatch({ control, name: "minRating" });
+
+  function onSubmit(data: FilterValues) {
+    const params: Record<string, string> = {};
+    if (data.search) params.search = data.search;
+    if (data.sortBy) {
+      params.sortBy = data.sortBy;
+      params.sortOrder = data.sortOrder;
+    }
+    if (data.minRating > 0) params.minRating = String(data.minRating);
+    startTransition(() => {
+      router.replace(
+        `${pathname}?${new URLSearchParams(params).toString()}` as Route,
+        { scroll: false },
+      );
+    });
   }
 
   return (
-    <div className="flex flex-wrap gap-3 items-center mb-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-wrap gap-3 mb-4 items-center"
+    >
+      <div className="flex flex-col gap-1">
+        <input
+          type="search"
+          placeholder="Search chips..."
+          {...register("search")}
+          className="input input-sm input-bordered w-48"
+        />
+        {errors.search && (
+          <span className="text-error text-xs">{errors.search.message}</span>
+        )}
+      </div>
+
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium whitespace-nowrap">Sort by</span>
         <select
           className="select select-sm select-bordered"
-          value={localSortBy}
-          onChange={(e) => {
-            const val = e.target.value;
-            setLocalSortBy(val);
-            update({ sortBy: val, sortOrder: val ? localSortOrder : "" });
-          }}
+          {...register("sortBy")}
         >
           {SORT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -67,16 +105,12 @@ export function ChipsFilterSort({
         </select>
       </div>
 
-      {localSortBy && (
+      {watchedSortBy && (
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium whitespace-nowrap">Order</span>
           <select
             className="select select-sm select-bordered"
-            value={localSortOrder}
-            onChange={(e) => {
-              setLocalSortOrder(e.target.value as "asc" | "desc");
-              update({ sortOrder: e.target.value });
-            }}
+            {...register("sortOrder")}
           >
             <option value="desc">Descending</option>
             <option value="asc">Ascending</option>
@@ -93,18 +127,18 @@ export function ChipsFilterSort({
           min="0"
           max="5"
           step="0.5"
-          value={localMinRating}
+          {...register("minRating", { valueAsNumber: true })}
           className="range range-sm w-32"
-          onChange={(e) => setLocalMinRating(Number(e.target.value))}
-          onPointerUp={(e) => {
-            const val = (e.target as HTMLInputElement).value;
-            update({ minRating: val === "0" ? "" : val });
-          }}
         />
         <span className="text-sm w-6 text-right">
-          {localMinRating > 0 ? localMinRating : "Any"}
+          {Number(watchedMinRating) > 0 ? watchedMinRating : "Any"}
         </span>
       </div>
-    </div>
+
+      <button type="submit" className="btn btn-sm btn-primary" disabled={isPending}>
+        {isPending && <span className="loading loading-spinner loading-xs" />}
+        Search
+      </button>
+    </form>
   );
 }

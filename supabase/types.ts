@@ -5,6 +5,20 @@ import type {
 } from "./generated.types";
 import { MergeDeep } from "type-fest";
 
+type ChipWithStatsRow = {
+  average_rating: number;
+  brand_id: string;
+  created_at: string;
+  description: string | null;
+  id: string;
+  name: string;
+  photo_url: string;
+  review_count: number;
+  slug: string;
+  updated_at: string | null;
+  user_id: string;
+};
+
 // generated null types is a known PostgreSQL issue, this is the recommended way to deal with it, taken from Supabase docs.
 // https://supabase.com/docs/guides/api/rest/generating-types
 export type Database = MergeDeep<
@@ -13,19 +27,12 @@ export type Database = MergeDeep<
     public: {
       Views: {
         chips_with_stats: {
-          Row: {
-            average_rating: number;
-            brand_id: string;
-            created_at: string;
-            description: string | null;
-            id: string;
-            name: string;
-            photo_url: string;
-            review_count: number;
-            slug: string;
-            updated_at: string | null;
-            user_id: string;
-          };
+          Row: ChipWithStatsRow;
+        };
+      };
+      Functions: {
+        search_chips: {
+          Returns: ChipWithStatsRow[];
         };
       };
     };

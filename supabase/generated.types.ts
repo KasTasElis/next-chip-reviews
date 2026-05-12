@@ -268,6 +268,30 @@ export type Database = {
           slug: string
         }[]
       }
+      search_chips: {
+        Args: {
+          query: string
+          min_rating?: number
+          page_limit?: number
+          page_offset?: number
+          threshold?: number
+          sort_by?: string
+          sort_order?: string
+        }
+        Returns: {
+          average_rating: number | null
+          brand_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          name: string | null
+          photo_url: string | null
+          review_count: number | null
+          slug: string | null
+          updated_at: string | null
+          user_id: string | null
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -3,6 +3,7 @@
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import { PAGE_SIZE } from "./constants";
 import { ChipsWithStats } from "@/supabase/types";
+import slugify from "slugify";
 
 export type SortableChipColumn = keyof Pick<
   ChipsWithStats,
@@ -14,13 +15,29 @@ export type FetchChipsOptions = {
   sortBy?: SortableChipColumn;
   sortOrder?: "asc" | "desc";
   minRating?: number;
+  search?: string;
 };
 
 export async function fetchChips(
   options: FetchChipsOptions = {},
 ): Promise<ChipsWithStats[]> {
-  const { offset = 0, sortBy, sortOrder = "desc", minRating } = options;
+  const { offset = 0, sortBy, sortOrder = "desc", minRating, search } =
+    options;
   const supabase = await createSupabaseServerClient();
+
+  if (search) {
+    const slugifiedQuery = slugify(search, { lower: true, strict: true });
+    if (!slugifiedQuery) return [];
+    const { data } = await supabase.rpc("search_chips", {
+      query: slugifiedQuery,
+      min_rating: minRating ?? 0,
+      page_limit: PAGE_SIZE,
+      page_offset: offset,
+      sort_by: sortBy,
+      sort_order: sortOrder,
+    });
+    return data ?? [];
+  }
 
   const sortColumn = sortBy ?? "created_at";
   const ascending = sortBy ? sortOrder === "asc" : false;
