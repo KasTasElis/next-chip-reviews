@@ -54,7 +54,7 @@ export default async function BrandSingle({ params }: Props) {
     "https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp";
 
   return (
-    <div className="container mx-auto my-5 mb-7">
+    <div className="container mx-auto my-5 mb-7 px-4">
       {/* Hero section */}
       <div className="flex flex-col sm:flex-row items-start gap-6 mb-10">
         <div className="avatar">

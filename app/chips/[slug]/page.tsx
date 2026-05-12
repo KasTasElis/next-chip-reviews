@@ -62,7 +62,7 @@ export default async function ChipsSingle({ params }: Props) {
   const brand = Array.isArray(chip.brands) ? chip.brands[0] : chip.brands;
 
   return (
-    <div className="container mx-auto my-5 mb-7">
+    <div className="container mx-auto my-5 mb-7 px-4">
       {/* Hero section */}
       <div className="flex flex-col md:flex-row gap-8 mb-10">
         <div className="md:w-1/2">
@@ -128,7 +128,11 @@ export default async function ChipsSingle({ params }: Props) {
       {/* Reviews section */}
       <div>
         <h2 className="text-lg font-bold mb-4">Reviews</h2>
-        <ReviewListContainer initialReviews={reviews ?? []} userId={user?.id ?? null} chipId={chip.id} />
+        <ReviewListContainer
+          initialReviews={reviews ?? []}
+          userId={user?.id ?? null}
+          chipId={chip.id}
+        />
       </div>
     </div>
   );
