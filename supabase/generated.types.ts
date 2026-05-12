@@ -191,6 +191,7 @@ export type Database = {
           chip_id: string
           created_at: string
           id: string
+          likes_count: number
           photo_url: string | null
           rating: number
           review: string
@@ -201,6 +202,7 @@ export type Database = {
           chip_id: string
           created_at?: string
           id?: string
+          likes_count?: number
           photo_url?: string | null
           rating: number
           review: string
@@ -211,6 +213,7 @@ export type Database = {
           chip_id?: string
           created_at?: string
           id?: string
+          likes_count?: number
           photo_url?: string | null
           rating?: number
           review?: string

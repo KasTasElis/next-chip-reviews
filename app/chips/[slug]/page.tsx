@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import { routes } from "@/app/routes";
 import ReviewSection from "./ReviewSection";
-import ReviewList from "./ReviewList";
+import ReviewListContainer from "./ReviewListContainer";
 import StarRating from "@/app/components/StarRating";
 import Image from "next/image";
 import { Timestamps } from "@/app/components/Timestamps";
@@ -128,7 +128,7 @@ export default async function ChipsSingle({ params }: Props) {
       {/* Reviews section */}
       <div>
         <h2 className="text-lg font-bold mb-4">Reviews</h2>
-        <ReviewList initialReviews={reviews ?? []} userId={user?.id ?? null} chipId={chip.id} />
+        <ReviewListContainer initialReviews={reviews ?? []} userId={user?.id ?? null} chipId={chip.id} />
       </div>
     </div>
   );

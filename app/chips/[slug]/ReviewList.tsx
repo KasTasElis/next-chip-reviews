@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import ReviewCard from "./ReviewCard";
-import type { ReviewWithProfile } from "./queries";
+import type { ReviewWithProfile, SortableReviewColumn } from "./queries";
 import { REVIEWS_PAGE_SIZE } from "./constants";
 import { fetchReviews } from "./actions";
 import { useInfiniteScroll } from "@/app/hooks/useInfiniteScroll";
@@ -25,14 +25,18 @@ export default function ReviewList({
   initialReviews,
   userId,
   chipId,
+  sortBy,
+  sortOrder,
 }: {
   initialReviews: ReviewWithProfile[];
   userId: string | null;
   chipId: string;
+  sortBy: SortableReviewColumn;
+  sortOrder: "asc" | "desc";
 }) {
   const fetchFn = useCallback(
-    (offset: number) => fetchReviews(chipId, offset),
-    [chipId],
+    (offset: number) => fetchReviews(chipId, offset, sortBy, sortOrder),
+    [chipId, sortBy, sortOrder],
   );
 
   const { items: reviews, isLoading, hasMore, sentinelRef } = useInfiniteScroll({

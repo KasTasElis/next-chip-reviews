@@ -4,7 +4,11 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/app/lib/supabase-server";
 import { REVIEWS_PAGE_SIZE } from "./constants";
-import { reviewsQueryBuilder, type ReviewWithProfile } from "./queries";
+import {
+  reviewsQueryBuilder,
+  type ReviewWithProfile,
+  type SortableReviewColumn,
+} from "./queries";
 
 const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -15,10 +19,11 @@ const reviewSchema = z.object({
 export async function fetchReviews(
   chipId: string,
   offset: number = 0,
+  sortBy: SortableReviewColumn = "likes_count",
+  sortOrder: "asc" | "desc" = "desc",
 ): Promise<ReviewWithProfile[]> {
   const supabase = await createSupabaseServerClient();
-  const { data } = await reviewsQueryBuilder(supabase, chipId)
-    .order("created_at", { ascending: false })
+  const { data } = await reviewsQueryBuilder(supabase, chipId, sortBy, sortOrder)
     .range(offset, offset + REVIEWS_PAGE_SIZE - 1);
   return data ?? [];
 }

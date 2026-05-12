@@ -183,16 +183,12 @@ export default function ReviewCard({
           </figure>
         )}
         <div className="flex items-center justify-between mt-3">
-          <Timestamps
-            created_at={review.created_at}
-            updated_at={review.updated_at}
-          />
           <button
             onClick={handleLike}
             disabled={!userId || isLiking}
             title={!userId ? "Sign in to like" : undefined}
             className={clsx(
-              "btn btn-ghost btn-sm gap-1",
+              "btn btn-ghost btn-lg gap-1",
               hasLiked && "text-error",
             )}
             aria-label={hasLiked ? "Unlike review" : "Like review"}
@@ -209,8 +205,13 @@ export default function ReviewCard({
             >
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
-            {likeCount > 0 && <span className="text-xs">{likeCount}</span>}
+            {likeCount > 0 && <span className="text-md">{likeCount}</span>}
           </button>
+
+          <Timestamps
+            created_at={review.created_at}
+            updated_at={review.updated_at}
+          />
         </div>
       </div>
 
