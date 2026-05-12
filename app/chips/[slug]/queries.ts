@@ -7,7 +7,7 @@ export function reviewsQueryBuilder(supabase: SupabaseClient, chipId: string) {
   return supabase
     .from("reviews")
     .select(
-      "id, rating, review, photo_url, created_at, updated_at, user_id, profiles(username, avatar_url)",
+      "id, rating, review, photo_url, created_at, updated_at, user_id, profiles!reviews_user_id_fkey(username, avatar_url), review_likes(user_id)",
     )
     .eq("chip_id", chipId)
     .order("created_at", { ascending: false });

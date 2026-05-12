@@ -2,7 +2,7 @@ import "dotenv/config";
 import { Pool } from "pg";
 import { faker } from "@faker-js/faker";
 import slugify from "slugify";
-import type { BrandInsert, ChipInsert, ReviewInsert } from "../types";
+import type { BrandInsert, ChipInsert, ReviewInsert, ReviewLikeInsert } from "../types";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -12,6 +12,7 @@ const USERS_COUNT = 10_000;
 const BRANDS_COUNT = 200;
 const CHIPS_COUNT = 10_000;
 const REVIEWS_COUNT = 350_000;
+const REVIEW_LIKES_COUNT = 1_000_000;
 const BATCH_SIZE = 500;
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -53,7 +54,7 @@ async function runBatches<T, R>(
 }
 
 async function cleanup() {
-  await pool.query("TRUNCATE public.reviews, public.chips, public.brands, public.profiles, auth.users CASCADE");
+  await pool.query("TRUNCATE public.review_likes, public.reviews, public.chips, public.brands, public.profiles, auth.users CASCADE");
   console.log("Cleaned up.");
 }
 
@@ -166,7 +167,7 @@ async function seedChips(
 async function seedReviews(
   chipIds: string[],
   userIds: string[],
-): Promise<void> {
+): Promise<string[]> {
   console.log(`Seeding ${REVIEWS_COUNT} reviews...`);
 
   // Build unique (chip_id, user_id) pairs — the table has a unique constraint on both
@@ -191,14 +192,15 @@ async function seedReviews(
     });
   }
 
-  await runBatches<ReviewInsert, never>(
+  return runBatches<ReviewInsert, string>(
     "reviews",
     REVIEWS_COUNT,
     reviews,
     async (batch) => {
-      await pool.query(
+      const result = await pool.query(
         `INSERT INTO public.reviews (id, chip_id, user_id, review, photo_url, rating, created_at)
-       SELECT gen_random_uuid(), unnest($1::uuid[]), unnest($2::uuid[]), unnest($3::text[]), unnest($4::text[]), unnest($5::smallint[]), unnest($6::timestamptz[])`,
+       SELECT gen_random_uuid(), unnest($1::uuid[]), unnest($2::uuid[]), unnest($3::text[]), unnest($4::text[]), unnest($5::smallint[]), unnest($6::timestamptz[])
+       RETURNING id`,
         [
           batch.map((r) => r.chip_id),
           batch.map((r) => r.user_id),
@@ -206,6 +208,47 @@ async function seedReviews(
           batch.map((r) => r.photo_url),
           batch.map((r) => r.rating),
           batch.map((r) => r.created_at),
+        ],
+      );
+      return result.rows.map((row) => row.id as string);
+    },
+  );
+}
+
+async function seedReviewLikes(
+  reviewIds: string[],
+  userIds: string[],
+): Promise<void> {
+  console.log(`Seeding ${REVIEW_LIKES_COUNT} review likes...`);
+
+  const used = new Set<string>();
+  const likes: ReviewLikeInsert[] = [];
+
+  while (likes.length < REVIEW_LIKES_COUNT) {
+    const review_id = randomFrom(reviewIds);
+    const user_id = randomFrom(userIds);
+    const key = `${review_id}:${user_id}`;
+    if (used.has(key)) continue;
+    used.add(key);
+    likes.push({
+      review_id,
+      user_id,
+      created_at: faker.date.past({ years: 2 }).toISOString(),
+    });
+  }
+
+  await runBatches<ReviewLikeInsert, never>(
+    "review likes",
+    REVIEW_LIKES_COUNT,
+    likes,
+    async (batch) => {
+      await pool.query(
+        `INSERT INTO public.review_likes (review_id, user_id, created_at)
+         SELECT unnest($1::uuid[]), unnest($2::uuid[]), unnest($3::timestamptz[])`,
+        [
+          batch.map((l) => l.review_id),
+          batch.map((l) => l.user_id),
+          batch.map((l) => l.created_at),
         ],
       );
       return [];
@@ -230,7 +273,8 @@ async function main() {
     const userIds = await seedUsersAndProfiles();
     const brandIds = await seedBrands(userIds);
     const chipIds = await seedChips(brandIds, userIds);
-    await seedReviews(chipIds, userIds);
+    const reviewIds = await seedReviews(chipIds, userIds);
+    await seedReviewLikes(reviewIds, userIds);
     const elapsed = ((Date.now() - start) / 1000).toFixed(1);
     console.log("✅ DONE - DB Seeding completed in", elapsed, "seconds");
   } finally {

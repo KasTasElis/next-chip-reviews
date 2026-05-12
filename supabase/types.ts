@@ -49,6 +49,7 @@ export type ChipsWithStats =
 export type BrandInsert = TablesInsert<"brands">;
 export type ChipInsert = TablesInsert<"chips">;
 export type ReviewInsert = TablesInsert<"reviews">;
+export type ReviewLikeInsert = TablesInsert<"review_likes">;
 export type ProfileInsert = TablesInsert<"profiles">;
 export type SimilarBrand =
   Database["public"]["Functions"]["find_similar_brands"]["Returns"][number];

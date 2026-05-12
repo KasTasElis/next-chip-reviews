@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import clsx from "clsx";
 import { toast } from "sonner";
-import { updateReview, deleteReview } from "./actions";
+import { updateReview, deleteReview, toggleReviewLike } from "./actions";
 import { Timestamps } from "@/app/components/Timestamps";
 import { UserProfile } from "@/app/components/UserProfile";
 import Image from "next/image";
@@ -27,9 +27,13 @@ export default function ReviewCard({
 }) {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [likes, setLikes] = useState(review.review_likes ?? []);
+  const [isLiking, setIsLiking] = useState(false);
 
   const isOwner = userId === review.user_id;
   const profile = review.profiles;
+  const likeCount = likes.length;
+  const hasLiked = userId ? likes.some((l) => l.user_id === userId) : false;
 
   const {
     handleSubmit,
@@ -75,6 +79,23 @@ export default function ReviewCard({
   const openEdit = () => {
     reset({ rating: review.rating, review: review.review });
     modalRef.current?.showModal();
+  };
+
+  const handleLike = async () => {
+    if (!userId || isLiking) return;
+    const prevLikes = likes;
+    setLikes(
+      hasLiked
+        ? likes.filter((l) => l.user_id !== userId)
+        : [...likes, { user_id: userId }],
+    );
+    setIsLiking(true);
+    const result = await toggleReviewLike(review.id);
+    setIsLiking(false);
+    if ("error" in result) {
+      setLikes(prevLikes);
+      toast.error(result.error);
+    }
   };
 
   return (
@@ -161,11 +182,35 @@ export default function ReviewCard({
             />
           </figure>
         )}
-        <div className="mt-3">
+        <div className="flex items-center justify-between mt-3">
           <Timestamps
             created_at={review.created_at}
             updated_at={review.updated_at}
           />
+          <button
+            onClick={handleLike}
+            disabled={!userId || isLiking}
+            title={!userId ? "Sign in to like" : undefined}
+            className={clsx(
+              "btn btn-ghost btn-sm gap-1",
+              hasLiked && "text-error",
+            )}
+            aria-label={hasLiked ? "Unlike review" : "Like review"}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill={hasLiked ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            {likeCount > 0 && <span className="text-xs">{likeCount}</span>}
+          </button>
         </div>
       </div>
 

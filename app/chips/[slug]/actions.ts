@@ -98,3 +98,36 @@ export async function deleteReview(reviewId: string) {
   refresh();
   return { success: true };
 }
+
+export async function toggleReviewLike(
+  reviewId: string,
+): Promise<{ liked: boolean } | { error: string }> {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: existing } = await supabase
+    .from("review_likes")
+    .select("review_id")
+    .eq("review_id", reviewId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (existing) {
+    const { error } = await supabase
+      .from("review_likes")
+      .delete()
+      .eq("review_id", reviewId)
+      .eq("user_id", user.id);
+    if (error) return { error: error.message };
+    return { liked: false };
+  } else {
+    const { error } = await supabase
+      .from("review_likes")
+      .insert({ review_id: reviewId, user_id: user.id });
+    if (error) return { error: error.message };
+    return { liked: true };
+  }
+}
