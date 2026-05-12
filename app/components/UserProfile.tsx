@@ -16,7 +16,7 @@ const getInitials = (name: string): string => {
 };
 
 const getColorClass = (seed: string): string => {
-  const charCode = seed.charCodeAt(0) - 97;
+  const charCode = seed.charCodeAt(0);
 
   const colors = [
     "bg-red-500",
@@ -29,7 +29,9 @@ const getColorClass = (seed: string): string => {
     "bg-gray-500",
   ];
 
-  return colors[charCode % colors.length];
+  const result = colors[charCode % colors.length];
+
+  return result;
 };
 
 export function UserProfile({
